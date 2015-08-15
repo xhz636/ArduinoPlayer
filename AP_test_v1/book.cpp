@@ -1,67 +1,6 @@
-#include <UTFT.h>
-#include <SPI.h>
-#include <SD.h>
-UTFT myGLCD(QD220A, A2, A1, A5, A4, A3);
-File HZK, ASCII;
-bool file_test(char* filename);
-void read_hz();
-void show_ascii(int x, int y, char c, int r, int g, int b, int dot);
-void show_chinese(int x, int y, char* s, int r, int g, int b, int dot);
-uint32_t read_txt(char* txtname, int offset, int r, int g, int b, int dot);
-void show_apimg(int x, int y, char* apimgname);
-void setup()
-{
-  uint32_t txtp;
-  int i;
-  randomSeed(analogRead(0));
-  myGLCD.InitLCD();
-  myGLCD.InitLCD();//Initializes twice to improve reliability
-  if(!SD.begin(4))
-  {
-    myGLCD.fillScr(255, 0, 0);
-    return;
-  }
-  read_hz();
-  show_apimg(0, 0, "sys/main.api");
-  myGLCD.fillScr(255, 255, 255);
-  show_apimg(0, 176 - 30, "sys/bottom.api");
-  show_apimg(8, 8, "sys/book.api");
-  show_apimg(78, 8, "sys/music.api");
-  show_apimg(148, 8, "sys/image.api");
-  show_apimg(8, 78, "sys/game.api");
-  show_apimg(78, 78, "sys/file.api");
-  show_apimg(148, 78, "sys/set.api");
-  for(i = 0, txtp = 0; i < 100; i++)
-  {
-    myGLCD.fillScr(255, 255, 255);
-    txtp = read_txt("zdyjh.txt", txtp, 0, 0, 0, 1);
-  }
-  HZK.close();
-}
-void loop()
-{
-  
-}
-bool file_test(char* filename)
-{
-  File test;
-  test = SD.open(filename, FILE_WRITE);
-  if(test)
-  {
-    test.close();
-    return true;
-  }
-  else
-    return false;
-}
-void read_hz()
-{
-  if(file_test("sys/HZK16"))
-    HZK = SD.open("sys/HZK16");
-  if(file_test("sys/ASCII"))
-    ASCII = SD.open("sys/ASCII");
-  return;
-}
+#include "common.h"
+#include "book.h"
+#include "main_menu.h"
 void show_ascii(int x, int y, char c, int r, int g, int b, int dot)
 {
   uint32_t offset;
@@ -151,31 +90,27 @@ uint32_t read_txt(char* txtname, int offset, int r, int g, int b, int dot)
   myTXT.close();
   return len;
 }
-void show_apimg(int x, int y, char* apimgname)
+void into_book()
 {
-  File apimg;
-  unsigned char temp[2];
-  unsigned char width, height, i, j;
-  unsigned char r, g, b, a;
-  if(!file_test(apimgname))
-    return;
-  apimg = SD.open(apimgname);
-  temp[0] = apimg.read();
-  temp[1] = apimg.read();
-  width = *(unsigned short*)temp;
-  temp[0] = apimg.read();
-  temp[1] = apimg.read();
-  height = *(unsigned short*)temp;
-  for(j = 0; j < height; j++)
-    for(i = 0; i < width; i++)
-    {
-      b = apimg.read();
-      g = apimg.read();
-      r = apimg.read();
-      a = apimg.read();
-      myGLCD.setColor(r, g, b);
-      myGLCD.drawPixel(x + i, y + j);
-    }
-  apimg.close();
+  work = BOOK_SHOW;
+  txt_last_offset = txt_now_offset = 0;
+  myGLCD.fillScr(255, 255, 255);
+  txt_next_offset = read_txt("zdyjh.txt", txt_now_offset, 0, 0, 0, 1);
+}
+void next_book()
+{
+  myGLCD.fillScr(255, 255, 255);
+  txt_last_offset = txt_now_offset;
+  txt_now_offset = txt_next_offset;
+  txt_next_offset = read_txt("zdyjh.txt", txt_now_offset, 0, 0, 0, 1);
+}
+void last_book()
+{
+  
+}
+void exit_book()
+{
+  show_main_menu();
   return;
 }
+
