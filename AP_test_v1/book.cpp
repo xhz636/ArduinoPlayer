@@ -1,47 +1,7 @@
 #include "common.h"
 #include "book.h"
 #include "main_menu.h"
-void show_ascii(int x, int y, char c, int r, int g, int b, int dot)
-{
-  uint32_t offset;
-  int i, j;
-  byte eight_dots;
-  offset = (uint32_t)((c & 0xFF) * 16);
-  ASCII.seek(offset);
-  myGLCD.setColor(r, g, b);
-  for(i = 0; i < 16; i++)
-  {
-    eight_dots = ASCII.read();
-    for(j = 0; j < 8; j++)
-      if(eight_dots & 1 << (7 - j))
-        if(dot == 1)
-          myGLCD.drawPixel(x + j, y + i);
-        else
-          myGLCD.fillRect(x + j * dot, y + i * dot, x + (j + 1) * dot - 1, y + (i + 1) * dot - 1);
-  }
-  return;
-}
-void show_chinese(int x, int y, char* s, int r, int g, int b, int dot)
-{
-  uint32_t offset;
-  int i, j;
-  word sixteen_dots;
-  offset = (uint32_t)(((s[0] & 0xFF) - 0xA1) * 94 + ((s[1] & 0xFF) - 0xA1)) * 0x20;
-  HZK.seek(offset);
-  myGLCD.setColor(r, g, b);
-  for(i = 0; i < 16; i++)
-  {
-    sixteen_dots = HZK.read() << 8;
-    sixteen_dots = sixteen_dots | HZK.read();
-    for(j = 0; j < 16; j++)
-      if(sixteen_dots & 1 << (15 - j))
-        if(dot == 1)
-          myGLCD.drawPixel(x + j, y + i);
-        else
-          myGLCD.fillRect(x + j * dot, y + i * dot, x + (j + 1) * dot - 1, y + (i + 1) * dot - 1);
-  }
-  return;
-}
+#include "book_menu.h"
 uint32_t read_txt(char* txtname, int offset, int r, int g, int b, int dot)
 {
   File myTXT;
@@ -90,27 +50,27 @@ uint32_t read_txt(char* txtname, int offset, int r, int g, int b, int dot)
   myTXT.close();
   return len;
 }
-void into_book()
+void into_book(char* txtname, uint32_t offset)
 {
+  txtbr = txtbg = txtbb = 255;
+  txtfr = txtfg = txtfb = 0;
+  txtdot = 1;
   work = BOOK_SHOW;
-  txt_last_offset = txt_now_offset = 0;
-  myGLCD.fillScr(255, 255, 255);
-  txt_next_offset = read_txt("zdyjh.txt", txt_now_offset, 0, 0, 0, 1);
+  myGLCD.fillScr(txtbr, txtbg, txtbb);
+  txt_next_offset = read_txt(txtname, offset, txtfr, txtfg, txtfb, txtdot);
 }
-void next_book()
+void next_book(char* txtname)
 {
-  myGLCD.fillScr(255, 255, 255);
-  txt_last_offset = txt_now_offset;
-  txt_now_offset = txt_next_offset;
-  txt_next_offset = read_txt("zdyjh.txt", txt_now_offset, 0, 0, 0, 1);
+  myGLCD.fillScr(txtbr, txtbg, txtbb);
+  txt_next_offset = read_txt(txtname, txt_next_offset, txtfr, txtfg, txtfb, txtdot);
 }
-void last_book()
+void last_book(char* txtname)
 {
   
 }
 void exit_book()
 {
-  show_main_menu();
+  into_book_menu();
   return;
 }
 

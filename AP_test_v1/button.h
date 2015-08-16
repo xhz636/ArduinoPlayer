@@ -7,8 +7,6 @@ void press_btnLEFT();
 void press_btnRIGHT();
 void press_btnA();
 void press_btnB();
-//void press_btnX();
-//void press_btnY();
 //void press_btnSTART();
 //void press_btnSELECT();
 #endif
