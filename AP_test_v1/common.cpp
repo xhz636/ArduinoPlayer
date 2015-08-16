@@ -81,12 +81,50 @@ void change_file_list_point(int change)
   draw_file_list_point(file_list_point, 255, 255, 255);
   file_list_point += change;
   draw_file_list_point(file_list_point, 255, 0, 0);
-  delay(200);
 }
 void draw_file_list_point(int point, int r, int g, int b)
 {
   myGLCD.setColor(r, g, b);
   myGLCD.drawRect(109, 2 + 19 * point, 208, 21 + 19 * point);
+  switch(work)
+  {
+    case BOOK_MENU:print_message(point, 10, 99, g, g, b, 1); break;
+  }
+  return;
+}
+void print_message(int point, int x, int y, int r, int g, int b, int dot)
+{
+  switch(work)
+  {
+    case BOOK_MENU:print_size(point, x, y, r, g, b, dot); break;
+  }
+}
+void print_size(int point, int x, int y, int r, int g, int b, int dot)
+{
+  char msg[10];
+  char unit[4][3] = {"B", "KB", "MB", "GB"};
+  char txtname[32];
+  int unit_index = 0, size_temp;
+  File myTXT;
+  switch(work)
+  {
+    case BOOK_MENU: strcpy(txtname, "txt/"); break;
+  }
+  strcat(txtname, file_list[file_list_point]);
+  if(!file_test(txtname))
+    return;
+  myTXT = SD.open(txtname);
+  size_temp = myTXT.size();
+  while(size_temp > 9999)
+  {
+    size_temp /= 1024;
+    unit_index++;
+  }
+  myTXT.close();
+  sprintf(msg, ":%d%s", size_temp, unit[unit_index]);
+  show_chinese(x, y, "\xB4\xF3", r, g, b, dot);
+  show_chinese(x + 16, y, "\xD0\xA1", r, g, b, dot);
+  show_english(x + 32, y, msg, r, g, b, dot);
   return;
 }
 

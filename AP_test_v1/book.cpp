@@ -17,6 +17,8 @@ uint32_t read_txt(char* txtname, int offset, int r, int g, int b, int dot)
   for(i = 0; i < y_num; i++)
     for(j = 0; j < x_num; j++)
     {
+      if(myTXT.position() >= txt_max_offset)
+        break;
       s[0] = myTXT.read();
       if((s[0] & 0xFF) < 0x80)
       {
@@ -52,21 +54,35 @@ uint32_t read_txt(char* txtname, int offset, int r, int g, int b, int dot)
 }
 void into_book(char* txtname, uint32_t offset)
 {
+  File myTXT;
   txtbr = txtbg = txtbb = 255;
   txtfr = txtfg = txtfb = 0;
   txtdot = 1;
+  if(!file_test(txtname))
+    return;
+  myTXT = SD.open(txtname);
+  txt_max_offset = myTXT.size();
+  myTXT.close();
   work = BOOK_SHOW;
   myGLCD.fillScr(txtbr, txtbg, txtbb);
+  txt_now_offset = offset;
   txt_next_offset = read_txt(txtname, offset, txtfr, txtfg, txtfb, txtdot);
 }
 void next_book(char* txtname)
 {
+  if(txt_next_offset >= txt_max_offset)
+    return;
   myGLCD.fillScr(txtbr, txtbg, txtbb);
+  txt_now_offset = txt_next_offset;
   txt_next_offset = read_txt(txtname, txt_next_offset, txtfr, txtfg, txtfb, txtdot);
 }
 void last_book(char* txtname)
 {
   
+}
+uint32_t find_last_offset(char* txtname)
+{
+  uint32_t temp_offset;
 }
 void exit_book()
 {

@@ -13,7 +13,7 @@ int main_menu_point, file_list_point;
 char file_list[9][16];
 char book_name[32];
 int txtfr, txtfg, txtfb, txtbr, txtbg, txtbb, txtdot;
-uint32_t txt_last_offset, txt_now_offset, txt_next_offset;
+uint32_t txt_last_offset, txt_now_offset, txt_next_offset, txt_max_offset;
 const int btnUP = 5;
 const int btnDOWN = 6;
 const int btnLEFT = 7;
