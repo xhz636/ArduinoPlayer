@@ -11,7 +11,26 @@ bool file_test(char* filename)
   else
     return false;
 }
-void read_file_list(char* dirname)
+int get_file_amount(char* dirname)
+{
+  int amount = 0;
+  File dir, entry;
+  dir = SD.open(dirname);
+  while(true)
+  {
+    entry = dir.openNextFile();
+    if(entry)
+    {
+      amount++;
+      entry.close();
+    }
+    else
+      break;
+  }
+  dir.close();
+  return amount;
+}
+void read_file_list(char* dirname, int offset)
 {
   int i;
   File dir, entry;
@@ -19,14 +38,32 @@ void read_file_list(char* dirname)
   for(i = 0; i < 9; i++)
   {
     entry = dir.openNextFile();
-    if(!entry)
-      file_list[i][0] = '\0';
+    if(offset)
+    {
+      entry.close();
+      offset--;
+      i--;
+    }
     else
     {
-      strcpy(file_list[i], entry.name());
-      entry.close();
+      if(!entry)
+        file_list[i][0] = '\0';
+      else
+      {
+        strcpy(file_list[i], entry.name());
+        entry.close();
+      }
     }
   }
+  dir.close();
+}
+void show_file_menu()
+{
+  int i;
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.fillRect(111, 4, 206, 174);
+  for(i = 0; i < 9; i++)
+    show_english(111, 4 + 19 * i, file_list[i], 0, 0, 0, 1);
 }
 void show_ascii(int x, int y, char c, int r, int g, int b, int dot)
 {
@@ -78,9 +115,37 @@ void show_chinese(int x, int y, char* s, int r, int g, int b, int dot)
 }
 void change_file_list_point(int change)
 {
-  draw_file_list_point(file_list_point, 255, 255, 255);
-  file_list_point += change;
-  draw_file_list_point(file_list_point, 255, 0, 0);
+  if(file_list_point == 0 && change == -1)
+  {
+    if(file_offset != 0)
+    {
+      draw_file_list_point(file_list_point, 255, 255, 255);
+      file_offset -= 9;
+      read_file_list("txt", file_offset);
+      show_file_menu();
+      file_list_point = 8;
+      draw_file_list_point(file_list_point, 255, 0, 0);
+    }
+  }
+  else if(file_list_point == 8 && change == 1)
+  {
+    if(file_offset + 9 < file_amount)
+    {
+      draw_file_list_point(file_list_point, 255, 255, 255);
+      file_offset += 9;
+      read_file_list("txt", file_offset);
+      show_file_menu();
+      file_list_point = 0;
+      draw_file_list_point(file_list_point, 255, 0, 0);
+    }
+  }
+  else if(file_list_point + change < file_amount - file_offset)
+  {
+    draw_file_list_point(file_list_point, 255, 255, 255);
+    file_list_point += change;
+    draw_file_list_point(file_list_point, 255, 0, 0);
+  }
+  return;
 }
 void draw_file_list_point(int point, int r, int g, int b)
 {

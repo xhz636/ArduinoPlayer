@@ -7,6 +7,7 @@ extern UTFT myGLCD;
 extern File HZK, ASCII;
 extern int work;
 extern int main_menu_point, file_list_point;
+extern int file_amount, file_offset;
 extern char file_list[9][16];
 extern char book_name[32];
 extern int txtfr, txtfg, txtfb, txtbr, txtbg, txtbb, txtdot;
@@ -26,7 +27,9 @@ enum WHERE
   BOOK_SHOW  
 };
 bool file_test(char* filename);
-void read_file_list(char* dirname);
+int get_file_amount(char* dirname);
+void read_file_list(char* dirname, int offset);
+void show_file_menu();
 void show_ascii(int x, int y, char c, int r, int g, int b, int dot);
 void show_english(int x, int y, char* sentence, int r, int g, int b, int dot);
 void show_chinese(int x, int y, char* s, int r, int g, int b, int dot);

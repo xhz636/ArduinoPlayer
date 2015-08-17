@@ -10,6 +10,7 @@ UTFT myGLCD(QD220A, A2, A1, A5, A4, A3);
 File HZK, ASCII;
 int work;
 int main_menu_point, file_list_point;
+int file_amount, file_offset;
 char file_list[9][16];
 char book_name[32];
 int txtfr, txtfg, txtfb, txtbr, txtbg, txtbb, txtdot;
