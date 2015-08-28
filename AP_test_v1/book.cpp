@@ -89,4 +89,25 @@ void exit_book()
   into_book_menu();
   return;
 }
+void into_book_config()
+{
+  work = BOOK_CONFIG;
+  myGLCD.fillScr(255, 255, 255);
+  show_chinese_sentence(10, 26, "\xB1\xB3\xBE\xB0\xD1\xD5\xC9\xAB", 0, 0, 0, 1);//背景颜色
+  myGLCD.setColor(txtbr, txtbb, txtbg);
+  myGLCD.fillRect(82, 2, 145, 65);
+  show_chinese_sentence(10, 92, "\xD7\xD6\xCC\xE5\xD1\xD5\xC9\xAB", 0, 0, 0, 1);//字体颜色
+  myGLCD.setColor(txtfr, txtfb, txtfg);
+  myGLCD.fillRect(82, 68, 145, 131);
+  show_chinese_sentence(10, 136, "\xD7\xD6\xCC\xE5\xB4\xF3\xD0\xA1", 0, 0, 0, 1);//字体大小
+  show_chinese_sentence(10, 156, "\xD4\xC4\xB6\xC1\xBD\xF8\xB6\xC8", 0, 0, 0, 1);//阅读进度
+  show_chinese_sentence(178, 136, "\xC8\xB7\xB6\xA8", 0, 0, 0, 1);//确定
+  show_chinese_sentence(178, 156, "\xC8\xA1\xCF\xFB", 0, 0, 0, 1);//取消
+}
+void exit_book_config()
+{
+  work = BOOK_SHOW;
+  txt_next_offset = txt_now_offset;
+  next_book(book_name);
+}
 

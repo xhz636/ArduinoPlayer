@@ -6,4 +6,6 @@ void next_book(char* txtname);
 void last_book(char* txtname);
 uint32_t find_last_offset(char* txtname);
 void exit_book();
+void into_book_config();
+void exit_book_config();
 #endif

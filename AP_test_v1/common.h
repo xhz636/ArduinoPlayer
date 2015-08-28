@@ -18,13 +18,14 @@ extern const int btnLEFT;
 extern const int btnRIGHT;
 extern const int btnA;
 extern const int btnB;
-//extern const int btnSTART;
-//extern const int btnSELECT;
+extern const int btnSTART;
+extern const int btnSELECT;
 enum WHERE
 {
   MAIN_MENU,
   BOOK_MENU,
-  BOOK_SHOW  
+  BOOK_SHOW,
+  BOOK_CONFIG
 };
 bool file_test(char* filename);
 int get_file_amount(char* dirname);
@@ -33,6 +34,7 @@ void show_file_menu();
 void show_ascii(int x, int y, char c, int r, int g, int b, int dot);
 void show_english(int x, int y, char* sentence, int r, int g, int b, int dot);
 void show_chinese(int x, int y, char* s, int r, int g, int b, int dot);
+void show_chinese_sentence(int x, int y, char* sentence, int r, int g, int b, int dot);
 void change_file_list_point(int change);
 void draw_file_list_point(int point, int r, int g, int b);
 void print_message(int point, int x, int y, int r, int g, int b, int dot);

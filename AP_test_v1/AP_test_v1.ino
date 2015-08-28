@@ -15,25 +15,25 @@ char file_list[9][16];
 char book_name[32];
 int txtfr, txtfg, txtfb, txtbr, txtbg, txtbb, txtdot;
 uint32_t txt_last_offset, txt_now_offset, txt_next_offset, txt_max_offset;
-const int btnUP = 5;
-const int btnDOWN = 6;
-const int btnLEFT = 7;
-const int btnRIGHT = 8;
-const int btnA = 2;
-const int btnB = 3;
-//const int btnSTART;
-//const int btnSELECT;
+const int btnUP = 2;
+const int btnDOWN = 3;
+const int btnLEFT = 4;
+const int btnRIGHT = 5;
+const int btnA = 6;
+const int btnB = 7;
+const int btnSTART = 8;
+const int btnSELECT = 9;
 void setup()
 {
   randomSeed(analogRead(0));
   myGLCD.InitLCD();
   myGLCD.InitLCD();//Initializes twice to improve reliability
-  if(!SD.begin(4))
+  init_btn();
+  if(!SD.begin(53))
   {
     myGLCD.fillScr(255, 0, 0);
     return;
   }
-  init_btn();
   read_hz();
   show_apimg(0, 0, "sys/main.api");
   show_main_menu();

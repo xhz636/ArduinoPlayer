@@ -16,7 +16,7 @@ void init_btn()
   pinMode(btnRIGHT, INPUT_PULLUP);
   pinMode(btnA, INPUT_PULLUP);
   pinMode(btnB, INPUT_PULLUP);
-  //pinMode(btnSTART, INPUT_PULLUP);
-  //pinMode(btnSELECT, INPUT_PULLUP);
+  pinMode(btnSTART, INPUT_PULLUP);
+  pinMode(btnSELECT, INPUT_PULLUP);
   return;
 }

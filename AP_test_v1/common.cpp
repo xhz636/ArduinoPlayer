@@ -113,6 +113,14 @@ void show_chinese(int x, int y, char* s, int r, int g, int b, int dot)
   }
   return;
 }
+void show_chinese_sentence(int x, int y, char* sentence, int r, int g, int b, int dot)
+{
+  int i, chinese_count;
+  chinese_count = strlen(sentence) / 2;
+  for(i = 0; i < chinese_count; i++)
+    show_chinese(x + 16 * i, y, sentence + 2 * i, r, g, b, dot);
+  return;
+}
 void change_file_list_point(int change)
 {
   if(file_list_point == 0 && change == -1)
@@ -187,8 +195,7 @@ void print_size(int point, int x, int y, int r, int g, int b, int dot)
   }
   myTXT.close();
   sprintf(msg, ":%d%s", size_temp, unit[unit_index]);
-  show_chinese(x, y, "\xB4\xF3", r, g, b, dot);
-  show_chinese(x + 16, y, "\xD0\xA1", r, g, b, dot);
+  show_chinese_sentence(x, y, "\xB4\xF3\xD0\xA1", r, g, b, dot);//大小
   show_english(x + 32, y, msg, r, g, b, dot);
   return;
 }

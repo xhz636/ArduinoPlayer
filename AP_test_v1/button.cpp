@@ -17,10 +17,10 @@ void press_button()
     press_btnA();
   if(digitalRead(btnB) == LOW)
     press_btnB();
-//  if(digitalRead(btnSTART) == LOW)
-//    press_btnSTART();
-//  if(digitalRead(btnSELECT) == LOW)
-//    press_btnSELECT();
+  if(digitalRead(btnSTART) == LOW)
+    press_btnSTART();
+  if(digitalRead(btnSELECT) == LOW)
+    press_btnSELECT();
 }
 void press_btnUP()
 {
@@ -75,5 +75,18 @@ void press_btnB()
   {
     case BOOK_MENU:exit_book_menu(); break;
     case BOOK_SHOW:exit_book(); break;
+    case BOOK_CONFIG: exit_book_config(); break;
   }
 }
+void press_btnSTART()
+{
+  switch(work)
+  {
+    case BOOK_SHOW:into_book_config(); break;
+  }
+}
+void press_btnSELECT()
+{
+  
+}
+
