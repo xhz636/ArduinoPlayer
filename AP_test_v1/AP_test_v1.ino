@@ -9,12 +9,15 @@
 UTFT myGLCD(QD220A, A2, A1, A5, A4, A3);
 File HZK, ASCII;
 int work;
-int main_menu_point, file_list_point;
+int main_menu_point, file_list_point, book_config_point;
 int file_amount, file_offset;
 char file_list[9][16];
 char book_name[32];
 int txtfr, txtfg, txtfb, txtbr, txtbg, txtbb, txtdot;
 uint32_t txt_last_offset, txt_now_offset, txt_next_offset, txt_max_offset;
+int temp_r[2], temp_g[2], temp_b[2], temp_dot, temp_point;
+uint32_t temp_offset_rate;
+boolean in_pallet;
 const int btnUP = 2;
 const int btnDOWN = 3;
 const int btnLEFT = 4;

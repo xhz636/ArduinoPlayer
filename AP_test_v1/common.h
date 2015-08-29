@@ -6,12 +6,15 @@
 extern UTFT myGLCD;
 extern File HZK, ASCII;
 extern int work;
-extern int main_menu_point, file_list_point;
+extern int main_menu_point, file_list_point, book_config_point;;
 extern int file_amount, file_offset;
 extern char file_list[9][16];
 extern char book_name[32];
 extern int txtfr, txtfg, txtfb, txtbr, txtbg, txtbb, txtdot;
 extern uint32_t txt_last_offset, txt_now_offset, txt_next_offset, txt_max_offset;
+extern int temp_r[2], temp_g[2], temp_b[2], temp_dot, temp_point;
+extern uint32_t temp_offset_rate;
+extern boolean in_pallet;
 extern const int btnUP;
 extern const int btnDOWN;
 extern const int btnLEFT;

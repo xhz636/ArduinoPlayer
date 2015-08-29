@@ -29,6 +29,12 @@ void press_btnUP()
     case MAIN_MENU:change_main_menu_point(0, -1); break;
     case BOOK_MENU:change_file_list_point(-1); break;
     case BOOK_SHOW:last_book(book_name); break;
+    case BOOK_CONFIG:if(in_pallet)
+                     {
+                       change_pallet_point(-1);
+                       delay(200);
+                       break;
+                     }
   }
 }
 void press_btnDOWN()
@@ -38,6 +44,12 @@ void press_btnDOWN()
     case MAIN_MENU:change_main_menu_point(0, 1); break;
     case BOOK_MENU:change_file_list_point(1); break;
     case BOOK_SHOW:next_book(book_name); break;
+    case BOOK_CONFIG:if(in_pallet)
+                     {
+                       change_pallet_point(1);
+                       delay(200);
+                       break;
+                     }
   }
 }
 void press_btnLEFT()
@@ -46,6 +58,22 @@ void press_btnLEFT()
   {
     case MAIN_MENU:change_main_menu_point(-1, 0); break;
     case BOOK_SHOW:last_book(book_name); break;
+    case BOOK_CONFIG:if(in_pallet)
+                     {
+                       if(digitalRead(btnSELECT) == LOW)
+                         change_temp_rgb(temp_point, book_config_point, -10);
+                       else
+                         change_temp_rgb(temp_point, book_config_point, -1);
+                     }
+                     else
+                     {
+                       switch(book_config_point)
+                       {
+                         case 2: change_dot(-1); break;
+                         case 3: change_offset(-1); break;
+                       }
+                     }
+                     break;
   }
 }
 void press_btnRIGHT()
@@ -54,6 +82,21 @@ void press_btnRIGHT()
   {
     case MAIN_MENU:change_main_menu_point(1, 0); break;
     case BOOK_SHOW:next_book(book_name); break;
+    case BOOK_CONFIG:if(in_pallet)
+                     {
+                       if(digitalRead(btnSELECT) == LOW)
+                         change_temp_rgb(temp_point, book_config_point, 10);
+                       else
+                         change_temp_rgb(temp_point, book_config_point, 1);
+                     }
+                     else
+                     {
+                       switch(book_config_point)
+                       {
+                         case 2: change_dot(1); break;
+                         case 3: change_offset(1); break;
+                       }
+                     }
   }
 }
 void press_btnA()
@@ -67,6 +110,34 @@ void press_btnA()
                      into_book(book_name, 0);
                      break;
                    }
+    case BOOK_CONFIG:if(!in_pallet)
+                     {
+                       draw_book_config_point(book_config_point, 255, 255, 255);
+                       switch(book_config_point)
+                       {
+                         case 0: case 1: show_pallet(book_config_point); break;
+                         case 4:{
+                                  txtbr = temp_r[0];
+                                  txtbg = temp_g[0];
+                                  txtbb = temp_b[0];
+                                  txtfr = temp_r[1];
+                                  txtfg = temp_g[1];
+                                  txtfb = temp_b[1];
+                                  txtdot = temp_dot;
+                                  txt_now_offset = txt_max_offset / 100 * temp_offset_rate;
+                                  if(txt_now_offset >= txt_max_offset)
+                                    txt_now_offset -= 20;
+                                }
+                         case 5:exit_book_config(); break;
+                       }
+                     }
+                     else if(temp_point == 3)
+                     {
+                       myGLCD.setColor(temp_r[book_config_point], temp_g[book_config_point], temp_b[book_config_point]);
+                       myGLCD.fillRect(146, 2 + 66 * book_config_point, 209, 2 + 66 * book_config_point + 63);
+                       in_pallet = false;
+                       draw_book_config_point(book_config_point, 255, 0, 0);
+                     }
   }
 }
 void press_btnB()
@@ -75,7 +146,14 @@ void press_btnB()
   {
     case BOOK_MENU:exit_book_menu(); break;
     case BOOK_SHOW:exit_book(); break;
-    case BOOK_CONFIG: exit_book_config(); break;
+    case BOOK_CONFIG:if(in_pallet)
+                     {
+                       in_pallet = false;
+                       myGLCD.setColor(255, 255, 255);
+                       myGLCD.fillRect(146, 2 + 66 * book_config_point, 209, 2 + 66 * book_config_point + 63);
+                       draw_book_config_point(book_config_point, 255, 0, 0);
+                       break;
+                     }
   }
 }
 void press_btnSTART()
@@ -87,6 +165,14 @@ void press_btnSTART()
 }
 void press_btnSELECT()
 {
-  
+  switch(work)
+  {
+    case BOOK_CONFIG:if(!in_pallet)
+                     {
+                       change_book_config_point();
+                       delay(200);
+                       break;
+                     }
+  }
 }
 
