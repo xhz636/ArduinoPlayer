@@ -112,10 +112,13 @@ void press_btnA()
                    }
     case BOOK_CONFIG:if(!in_pallet)
                      {
-                       draw_book_config_point(book_config_point, 255, 255, 255);
                        switch(book_config_point)
                        {
-                         case 0: case 1: show_pallet(book_config_point); break;
+                         case 0: case 1:{
+                                        draw_book_config_point(book_config_point, 255, 255, 255);
+                                        show_pallet(book_config_point);
+                                        break;
+                                        }
                          case 4:{
                                   txtbr = temp_r[0];
                                   txtbg = temp_g[0];
@@ -124,7 +127,7 @@ void press_btnA()
                                   txtfg = temp_g[1];
                                   txtfb = temp_b[1];
                                   txtdot = temp_dot;
-                                  txt_now_offset = txt_max_offset / 100 * temp_offset_rate;
+                                  txt_now_offset = txt_max_offset * temp_offset_rate / 100;
                                   if(txt_now_offset >= txt_max_offset)
                                     txt_now_offset -= 20;
                                 }

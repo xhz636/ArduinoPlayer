@@ -18,7 +18,7 @@ int get_file_amount(char* dirname)
   dir = SD.open(dirname);
   while(true)
   {
-    entry = dir.openNextFile();
+    entry = dir.openNextFile();  //打开所有文件，计算数量
     if(entry)
     {
       amount++;
@@ -38,7 +38,7 @@ void read_file_list(char* dirname, int offset)
   for(i = 0; i < 9; i++)
   {
     entry = dir.openNextFile();
-    if(offset)
+    if(offset)  //跳过偏移前文件
     {
       entry.close();
       offset--;
@@ -50,7 +50,7 @@ void read_file_list(char* dirname, int offset)
         file_list[i][0] = '\0';
       else
       {
-        strcpy(file_list[i], entry.name());
+        strcpy(file_list[i], entry.name());  //保存文件名
         entry.close();
       }
     }
@@ -70,13 +70,13 @@ void show_ascii(int x, int y, char c, int r, int g, int b, int dot)
   uint32_t offset;
   int i, j;
   byte eight_dots;
-  offset = (uint32_t)((c & 0xFF) * 16);
+  offset = (uint32_t)((c & 0xFF) * 16);  //计算对应字库中的偏移
   ASCII.seek(offset);
   myGLCD.setColor(r, g, b);
   for(i = 0; i < 16; i++)
   {
     eight_dots = ASCII.read();
-    for(j = 0; j < 8; j++)
+    for(j = 0; j < 8; j++)  //逐行描点
       if(eight_dots & 1 << (7 - j))
         if(dot == 1)
           myGLCD.drawPixel(x + j, y + i);
@@ -97,14 +97,14 @@ void show_chinese(int x, int y, char* s, int r, int g, int b, int dot)
   uint32_t offset;
   int i, j;
   word sixteen_dots;
-  offset = (uint32_t)(((s[0] & 0xFF) - 0xA1) * 94 + ((s[1] & 0xFF) - 0xA1)) * 0x20;
+  offset = (uint32_t)(((s[0] & 0xFF) - 0xA1) * 94 + ((s[1] & 0xFF) - 0xA1)) * 0x20;  //计算对应字库中的偏移
   HZK.seek(offset);
   myGLCD.setColor(r, g, b);
   for(i = 0; i < 16; i++)
   {
     sixteen_dots = HZK.read() << 8;
-    sixteen_dots = sixteen_dots | HZK.read();
-    for(j = 0; j < 16; j++)
+    sixteen_dots = sixteen_dots | HZK.read();  //2个字符组成一个汉字
+    for(j = 0; j < 16; j++)  //逐行描点
       if(sixteen_dots & 1 << (15 - j))
         if(dot == 1)
           myGLCD.drawPixel(x + j, y + i);
@@ -123,7 +123,7 @@ void show_chinese_sentence(int x, int y, char* sentence, int r, int g, int b, in
 }
 void change_file_list_point(int change)
 {
-  if(file_list_point == 0 && change == -1)
+  if(file_list_point == 0 && change == -1)  //上一页文件列表
   {
     if(file_offset != 0)
     {
@@ -135,7 +135,7 @@ void change_file_list_point(int change)
       draw_file_list_point(file_list_point, 255, 0, 0);
     }
   }
-  else if(file_list_point == 8 && change == 1)
+  else if(file_list_point == 8 && change == 1)  //下一页文件列表
   {
     if(file_offset + 9 < file_amount)
     {
@@ -147,7 +147,7 @@ void change_file_list_point(int change)
       draw_file_list_point(file_list_point, 255, 0, 0);
     }
   }
-  else if(file_list_point + change < file_amount - file_offset)
+  else if(file_list_point + change < file_amount - file_offset)  //当前页内移动光标
   {
     draw_file_list_point(file_list_point, 255, 255, 255);
     file_list_point += change;
@@ -187,8 +187,8 @@ void print_size(int point, int x, int y, int r, int g, int b, int dot)
   if(!file_test(txtname))
     return;
   myTXT = SD.open(txtname);
-  size_temp = myTXT.size();
-  while(size_temp > 9999)
+  size_temp = myTXT.size();  //读取文件大小
+  while(size_temp > 9999)  //超过4位转换单位
   {
     size_temp /= 1024;
     unit_index++;

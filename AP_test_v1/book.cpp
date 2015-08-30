@@ -2,25 +2,25 @@
 #include "book.h"
 #include "main_menu.h"
 #include "book_menu.h"
-uint32_t read_txt(char* txtname, int offset, int r, int g, int b, int dot)
+uint32_t read_txt(char* txtname, uint32_t offset, int r, int g, int b, int dot)
 {
   File myTXT;
   uint32_t len, leave = 0;
   int i, j, x_num, y_num;
   char s[3];
-  if(!file_test(txtname))
+  if(!file_test(txtname))  //测试文件
     return 0;
   myTXT = SD.open(txtname);
   myTXT.seek(offset);
-  x_num = 220 / (8 * dot);
-  y_num = 176 / (16 * dot);
+  x_num = 220 / (8 * dot);  //每行字符数
+  y_num = 176 / (16 * dot);  //行数
   for(i = 0; i < y_num; i++)
     for(j = 0; j < x_num; j++)
     {
-      if(myTXT.position() >= txt_max_offset)
+      if(myTXT.position() >= txt_max_offset)  //显示完毕
         break;
       s[0] = myTXT.read();
-      if((s[0] & 0xFF) < 0x80)
+      if((s[0] & 0xFF) < 0x80)  //标准ASCII
       {
         if(s[0] == 0x0D)
         {
@@ -31,24 +31,24 @@ uint32_t read_txt(char* txtname, int offset, int r, int g, int b, int dot)
       }
       else
       {
-        s[1] = myTXT.read();
+        s[1] = myTXT.read();  //2个字符组成汉字
         s[2] = 0;
         if(j < x_num - 1 || i < y_num - 1)
         {
-          if(j >= x_num - 1)
+          if(j >= x_num - 1)  //换行
           {
             i++;
             j = 0;
           }
           show_chinese(j * 8 * dot, i * 16 * dot, s, r, g, b, dot);
-          leave = 0;
+          leave = 0;  //最后一个汉字显示
           j++;
         }
         else
-          leave = 2;
+          leave = 2;  //最后一个汉字未显示
       }
     }
-  len = myTXT.position() - leave;
+  len = myTXT.position() - leave;  //返回下一页偏移
   myTXT.close();
   return len;
 }
@@ -61,7 +61,7 @@ void into_book(char* txtname, uint32_t offset)
   if(!file_test(txtname))
     return;
   myTXT = SD.open(txtname);
-  txt_max_offset = myTXT.size();
+  txt_max_offset = myTXT.size();  //读取电子书最大偏移
   myTXT.close();
   work = BOOK_SHOW;
   myGLCD.fillScr(txtbr, txtbg, txtbb);
@@ -82,7 +82,7 @@ void last_book(char* txtname)
 }
 uint32_t find_last_offset(char* txtname)
 {
-  uint32_t temp_offset;
+
 }
 void exit_book()
 {
@@ -93,6 +93,7 @@ void into_book_config()
 {
   char temp[4];
   work = BOOK_CONFIG;
+  //备份信息
   book_config_point = 0;
   temp_r[0] = txtbr;
   temp_g[0] = txtbg;
@@ -161,7 +162,7 @@ void change_temp_rgb(int rgb, int point, int change)
     case 1: temp_rgb = temp_g[point]; break;
     case 2: temp_rgb = temp_b[point]; break;
   }
-  if(temp_rgb + change < 256 && temp_rgb + change >= 0)
+  if(temp_rgb + change < 256 && temp_rgb + change >= 0)  //数值限定在0~255
   {
     sprintf(temp, "%d", temp_rgb);
     show_english(146 + 32, 2 + 66 * point + 16 * rgb, temp, 255, 255, 255, 1);
@@ -187,7 +188,7 @@ void change_pallet_point(int change)
 }
 void change_dot(int change)
 {
-  if(temp_dot + change > 0 && temp_dot + change < 6)
+  if(temp_dot + change > 0 && temp_dot + change < 6)  //数值限定在1~5
   {
     show_ascii(82, 136, temp_dot + '0', 255, 255, 255, 1);
     temp_dot += change;
@@ -197,7 +198,7 @@ void change_dot(int change)
 void change_offset(int change)
 {
   char temp[4];
-  if(temp_offset_rate + change <= 100 && temp_offset_rate + change >= 0)
+  if(temp_offset_rate + change <= 100 && temp_offset_rate + change >= 0)  //数值限定在0~100
   {
     sprintf(temp, "%d", temp_offset_rate);
     show_english(82, 156, temp, 255, 255, 255, 1);

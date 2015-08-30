@@ -25,21 +25,21 @@ extern const int btnSTART;
 extern const int btnSELECT;
 enum WHERE
 {
-  MAIN_MENU,
-  BOOK_MENU,
-  BOOK_SHOW,
-  BOOK_CONFIG
+  MAIN_MENU,  //主菜单
+  BOOK_MENU,  //电子书文件列表
+  BOOK_SHOW,  //电子书显示界面
+  BOOK_CONFIG  //电子书选项界面
 };
-bool file_test(char* filename);
-int get_file_amount(char* dirname);
-void read_file_list(char* dirname, int offset);
-void show_file_menu();
-void show_ascii(int x, int y, char c, int r, int g, int b, int dot);
-void show_english(int x, int y, char* sentence, int r, int g, int b, int dot);
-void show_chinese(int x, int y, char* s, int r, int g, int b, int dot);
-void show_chinese_sentence(int x, int y, char* sentence, int r, int g, int b, int dot);
-void change_file_list_point(int change);
-void draw_file_list_point(int point, int r, int g, int b);
-void print_message(int point, int x, int y, int r, int g, int b, int dot);
-void print_size(int point, int x, int y, int r, int g, int b, int dot);
+bool file_test(char* filename);  //测试文件
+int get_file_amount(char* dirname);  //计算文件夹内文件数量
+void read_file_list(char* dirname, int offset);  //载入文件列表
+void show_file_menu();  //显示文件列表
+void show_ascii(int x, int y, char c, int r, int g, int b, int dot);  //ASCII
+void show_english(int x, int y, char* sentence, int r, int g, int b, int dot);  //英文句子
+void show_chinese(int x, int y, char* s, int r, int g, int b, int dot);  //单个汉字
+void show_chinese_sentence(int x, int y, char* sentence, int r, int g, int b, int dot);  //中文句子
+void change_file_list_point(int change);  //改变光标
+void draw_file_list_point(int point, int r, int g, int b);  //画光标
+void print_message(int point, int x, int y, int r, int g, int b, int dot);  //输出信息
+void print_size(int point, int x, int y, int r, int g, int b, int dot);  //输出文件大小
 #endif
