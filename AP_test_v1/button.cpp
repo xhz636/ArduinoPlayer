@@ -26,7 +26,12 @@ void press_btnUP()
   switch(work)
   {
     case MAIN_MENU:change_main_menu_point(0, -1); break;
-    case BOOK_MENU:change_file_list_point(-1); break;
+    case BOOK_MENU:
+    case MUSIC_MENU:
+    case IMAGE_MENU:
+    case GAME_MENU:
+    case FILE_MENU:
+                    change_file_list_point(-1); break;
     case BOOK_SHOW:last_book(book_name); break;
     case BOOK_CONFIG:if(in_pallet)
                      {
@@ -41,7 +46,12 @@ void press_btnDOWN()
   switch(work)
   {
     case MAIN_MENU:change_main_menu_point(0, 1); break;
-    case BOOK_MENU:change_file_list_point(1); break;
+    case BOOK_MENU:
+    case MUSIC_MENU:
+    case IMAGE_MENU:
+    case GAME_MENU:
+    case FILE_MENU:
+                    change_file_list_point(1); break;
     case BOOK_SHOW:next_book(book_name); break;
     case BOOK_CONFIG:if(in_pallet)
                      {
@@ -102,17 +112,7 @@ void press_btnA()
 {
   switch(work)
   {
-    case MAIN_MENU:{
-                     switch(main_menu_point)
-                     {
-                       case 0: into_book_menu(); break;
-                       case 1: into_music_menu(); break;
-                       case 2: into_image_menu(); break;
-                       case 3: into_game_menu(); break;
-                       case 4: into_file_menu(); break;
-                     }
-                     break;
-                   }
+    case MAIN_MENU:into_menu(); break;
     case BOOK_MENU:{
                      strcpy(book_name, "book/");
                      strcat(book_name, file_list[file_list_point]);
@@ -156,7 +156,12 @@ void press_btnB()
 {
   switch(work)
   {
-    case BOOK_MENU:exit_book_menu(); break;
+    case BOOK_MENU:
+    case MUSIC_MENU:
+    case IMAGE_MENU:
+    case GAME_MENU:
+    case FILE_MENU:
+                   exit_menu(); break;
     case BOOK_SHOW:exit_book(); break;
     case BOOK_CONFIG:if(in_pallet)
                      {
@@ -166,10 +171,6 @@ void press_btnB()
                        draw_book_config_point(book_config_point, 255, 0, 0);
                        break;
                      }
-    case MUSIC_MENU:exit_music_menu(); break;
-    case IMAGE_MENU:exit_image_menu(); break;
-    case GAME_MENU:exit_game_menu(); break;
-    case FILE_MENU:exit_file_menu(); break;
   }
 }
 void press_btnSTART()

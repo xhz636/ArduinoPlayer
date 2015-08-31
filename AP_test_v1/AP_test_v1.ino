@@ -9,6 +9,8 @@
 UTFT myGLCD(QD220A, A2, A1, A5, A4, A3);
 File HZK, ASCII;
 int work;  //当前所在位置
+char workdirname[32];
+int workdircase;
 int main_menu_point, file_list_point, book_config_point;  //主菜单、文件菜单、电子书选项光标位置
 int file_amount, file_offset;  //文件菜单中文件总量、文件偏移
 char file_list[9][16];  //文件菜单列表

@@ -40,14 +40,31 @@ void read_file_list(char* dirname, int offset, int showdir)
   int i;
   File dir, entry;
   dir = SD.open(dirname);
+  dir.rewindDirectory();
   for(i = 0; i < 9; i++)
   {
     entry = dir.openNextFile();
     if(offset)  //跳过偏移前文件
     {
+      switch(showdir)
+      {
+        case 0: if(!entry.isDirectory())
+                {
+                  offset--;
+                  i--;
+                }
+                break;
+        case 1: if(entry.isDirectory())
+                {
+                  offset--;
+                  i--;
+                }
+                break;
+        case 2: offset--;
+                i--;
+                break;
+      }
       entry.close();
-      offset--;
-      i--;
     }
     else
     {
@@ -57,8 +74,16 @@ void read_file_list(char* dirname, int offset, int showdir)
         //保存文件名
         switch(showdir)
         {
-          case 0: if(!entry.isDirectory()) strcpy(file_list[i], entry.name()); break;  //只显示文件
-          case 1: if(entry.isDirectory()) strcpy(file_list[i], entry.name()); break;  //只显示目录
+          case 0: if(!entry.isDirectory())
+                    strcpy(file_list[i], entry.name());
+                  else
+                    i--;
+                  break;  //只显示文件
+          case 1: if(entry.isDirectory())
+                    strcpy(file_list[i], entry.name());
+                  else
+                    i--;
+                  break;  //只显示目录
           case 2: strcpy(file_list[i], entry.name()); break;
         }
         entry.close();
@@ -139,7 +164,7 @@ void change_file_list_point(int change)
     {
       draw_file_list_point(file_list_point, 255, 255, 255);
       file_offset -= 9;
-      read_file_list("book", file_offset, 0);
+      read_file_list(workdirname, file_offset, workdircase);
       show_file_menu();
       file_list_point = 8;
       draw_file_list_point(file_list_point, 255, 0, 0);
@@ -151,7 +176,7 @@ void change_file_list_point(int change)
     {
       draw_file_list_point(file_list_point, 255, 255, 255);
       file_offset += 9;
-      read_file_list("book", file_offset, 0);
+      read_file_list(workdirname, file_offset, workdircase);
       show_file_menu();
       file_list_point = 0;
       draw_file_list_point(file_list_point, 255, 0, 0);

@@ -1,11 +1,14 @@
 #ifndef COMMON_H
 #define COMMON_H
+//#define DEBUG
 #include <UTFT.h>
 #include <SPI.h>
 #include <SD.h>
 extern UTFT myGLCD;
 extern File HZK, ASCII;
 extern int work;
+extern char workdirname[32];
+extern int workdircase;
 extern int main_menu_point, file_list_point, book_config_point;;
 extern int file_amount, file_offset;
 extern char file_list[9][16];

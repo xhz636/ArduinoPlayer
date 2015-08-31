@@ -85,7 +85,7 @@ uint32_t find_last_offset(char* txtname)
 }
 void exit_book()
 {
-  into_book_menu();
+  into_menu();
   return;
 }
 void into_book_config()

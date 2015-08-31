@@ -17,6 +17,7 @@ void show_main_menu()
 }
 void show_apimg(int x, int y, char* apimgname)
 {
+  #ifndef DEBUG
   File apimg;
   unsigned char temp[2];
   unsigned char width, height, i, j;
@@ -42,6 +43,7 @@ void show_apimg(int x, int y, char* apimgname)
     }
   apimg.close();
   return;
+  #endif
 }
 void change_main_menu_point(int change_x, int change_y)
 {
@@ -63,92 +65,48 @@ void draw_main_menu_point(int point, int r, int g, int b)
   myGLCD.drawCircle(x, y, 35);
   return;
 }
-void into_book_menu()
+void into_menu()
 {
-  work = BOOK_MENU;
-  file_amount = get_file_amount("book", 0);  //book文件夹内文件数量
+  char imagename[16];
+  switch(main_menu_point)
+  {
+    case 0: work = BOOK_MENU;
+            workdircase = 0;
+            strcpy(workdirname, "book");
+            strcpy(imagename, "sys/book.api");
+            break;
+    case 1: work = MUSIC_MENU;
+            workdircase = 0;
+            strcpy(workdirname, "/");
+            strcpy(imagename, "sys/music.api");
+            break;
+    case 2: work = IMAGE_MENU;
+            workdircase = 0;
+            strcpy(workdirname, "iamge");
+            strcpy(imagename, "sys/image.api");
+            break;
+    case 3: work = GAME_MENU;
+            workdircase = 1;
+            strcpy(workdirname, "game");
+            strcpy(imagename, "sys/game.api");
+            break;
+    case 4: work = FILE_MENU;
+            workdircase = 2;
+            strcpy(workdirname, "/");
+            strcpy(imagename, "sys/file.api");
+            break;
+  }
+  file_amount = get_file_amount(workdirname, workdircase);  //book文件夹内文件数量
   file_offset = 0;
-  read_file_list("book", file_offset, 0);  //载入文件列表
+  read_file_list(workdirname, file_offset, workdircase);  //载入文件列表
   myGLCD.fillScr(255, 255, 255);
-  show_apimg(23, 23, "sys/book.api");  //显示图标
+  show_apimg(23, 23, imagename);  //显示图标
   show_file_menu();  //显示文件列表
   file_list_point = 0;
   draw_file_list_point(file_list_point, 255, 0, 0);  //光标
   return;
 }
-void exit_book_menu()
-{
-  show_main_menu();
-  return;
-}
-void into_music_menu()
-{
-  work = MUSIC_MENU;
-  file_amount = get_file_amount("/", 0);  //跟目录内文件数量
-  file_offset = 0;
-  read_file_list("/", file_offset, 0);  //载入文件列表
-  myGLCD.fillScr(255, 255, 255);
-  show_apimg(23, 23, "sys/music.api");  //显示图标
-  show_file_menu();  //显示文件列表
-  file_list_point = 0;
-  draw_file_list_point(file_list_point, 255, 0, 0);  //光标
-  return;
-}
-void exit_music_menu()
-{
-  show_main_menu();
-  return;
-}
-void into_image_menu()
-{
-  work = IMAGE_MENU;
-  file_amount = get_file_amount("image", 0);  //image文件夹内文件数量
-  file_offset = 0;
-  read_file_list("image", file_offset, 0);  //载入文件列表
-  myGLCD.fillScr(255, 255, 255);
-  show_apimg(23, 23, "sys/image.api");  //显示图标
-  show_file_menu();  //显示文件列表
-  file_list_point = 0;
-  draw_file_list_point(file_list_point, 255, 0, 0);  //光标
-  return;
-}
-void exit_image_menu()
-{
-  show_main_menu();
-  return;
-}
-void into_game_menu()
-{
-  work = GAME_MENU;
-  file_amount = get_file_amount("game", 1);  //game文件夹内文件夹数量
-  file_offset = 0;
-  read_file_list("game", file_offset, 1);  //载入文件列表
-  myGLCD.fillScr(255, 255, 255);
-  show_apimg(23, 23, "sys/game.api");  //显示图标
-  show_file_menu();  //显示文件列表
-  file_list_point = 0;
-  draw_file_list_point(file_list_point, 255, 0, 0);  //光标
-  return;
-}
-void exit_game_menu()
-{
-  show_main_menu();
-  return;
-}
-void into_file_menu()
-{
-  work = FILE_MENU;
-  file_amount = get_file_amount("/", 2);  //跟目录内所有文件及文件夹数量
-  file_offset = 0;
-  read_file_list("/", file_offset, 0);  //载入文件列表
-  myGLCD.fillScr(255, 255, 255);
-  show_apimg(23, 23, "sys/file.api");  //显示图标
-  show_file_menu();  //显示文件列表
-  file_list_point = 0;
-  draw_file_list_point(file_list_point, 255, 0, 0);  //光标
-  return;
-}
-void exit_file_menu()
+void exit_menu()
 {
   show_main_menu();
   return;
