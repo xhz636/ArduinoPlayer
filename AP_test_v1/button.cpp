@@ -2,6 +2,7 @@
 #include "button.h"
 #include "menu.h"
 #include "book.h"
+#include "music.h"
 void press_button()
 {
   if(digitalRead(btnUP) == LOW)
@@ -66,6 +67,12 @@ void press_btnLEFT()
   switch(work)
   {
     case MAIN_MENU:change_main_menu_point(-1, 0); break;
+    case BOOK_MENU:
+    case MUSIC_MENU:
+    case IMAGE_MENU:
+    case GAME_MENU:
+    case FILE_MENU:
+                    change_file_list_point(-9); break;
     case BOOK_SHOW:last_book(book_name); break;
     case BOOK_CONFIG:if(in_pallet)
                      {
@@ -90,6 +97,12 @@ void press_btnRIGHT()
   switch(work)
   {
     case MAIN_MENU:change_main_menu_point(1, 0); break;
+    case BOOK_MENU:
+    case MUSIC_MENU:
+    case IMAGE_MENU:
+    case GAME_MENU:
+    case FILE_MENU:
+                    change_file_list_point(9); break;
     case BOOK_SHOW:next_book(book_name); break;
     case BOOK_CONFIG:if(in_pallet)
                      {
@@ -150,6 +163,11 @@ void press_btnA()
                        in_pallet = false;
                        draw_book_config_point(book_config_point, 255, 0, 0);
                      }
+    case MUSIC_MENU:{
+                      strcpy(music_name, file_list[file_list_point]);
+                      into_music(music_name);
+                      break;
+                    }
   }
 }
 void press_btnB()
@@ -171,6 +189,7 @@ void press_btnB()
                        draw_book_config_point(book_config_point, 255, 0, 0);
                        break;
                      }
+    case MUSIC_PLAY:exit_music(); break;
   }
 }
 void press_btnSTART()

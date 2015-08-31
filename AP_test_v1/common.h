@@ -4,6 +4,10 @@
 #include <UTFT.h>
 #include <SPI.h>
 #include <SD.h>
+#include <SimpleSDAudio.h>
+// Create static buffer 
+#define BIGBUFSIZE (2*512)
+extern uint8_t bigbuf[BIGBUFSIZE];
 extern UTFT myGLCD;
 extern File HZK, ASCII;
 extern int work;
@@ -18,6 +22,8 @@ extern uint32_t txt_last_offset, txt_now_offset, txt_next_offset, txt_max_offset
 extern int temp_r[2], temp_g[2], temp_b[2], temp_dot, temp_point;
 extern uint32_t temp_offset_rate;
 extern boolean in_pallet;
+extern char music_name[16];
+extern boolean music_success;
 extern const int btnUP;
 extern const int btnDOWN;
 extern const int btnLEFT;
@@ -26,6 +32,7 @@ extern const int btnA;
 extern const int btnB;
 extern const int btnSTART;
 extern const int btnSELECT;
+extern const int battery;
 enum WHERE
 {
   MAIN_MENU,  //主菜单
@@ -33,6 +40,7 @@ enum WHERE
   BOOK_SHOW,  //电子书显示界面
   BOOK_CONFIG,  //电子书选项界面
   MUSIC_MENU,  //音乐文件列表
+  MUSIC_PLAY,  //音乐播放界面
   IMAGE_MENU,  //图片文件列表
   GAME_MENU,  //游戏文件列表
   FILE_MENU  //总文件列表

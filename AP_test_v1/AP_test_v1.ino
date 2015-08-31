@@ -1,11 +1,15 @@
 #include <UTFT.h>
 #include <SPI.h>
 #include <SD.h>
+#include <SimpleSDAudio.h>
 #include "common.h"
 #include "init.h"
 #include "menu.h"
 #include "book.h"
 #include "button.h"
+// Create static buffer 
+#define BIGBUFSIZE (2*512)
+uint8_t bigbuf[BIGBUFSIZE];
 UTFT myGLCD(QD220A, A2, A1, A5, A4, A3);
 File HZK, ASCII;
 int work;  //当前所在位置
@@ -20,6 +24,8 @@ uint32_t txt_last_offset, txt_now_offset, txt_next_offset, txt_max_offset;  //�
 int temp_r[2], temp_g[2], temp_b[2], temp_dot, temp_point;  //电子书选项中的临时前景、背景、字号和调色板光标
 uint32_t temp_offset_rate;  //电子书选项中的临时偏移比例
 boolean in_pallet;  //调色板标志
+char music_name[16];  //音乐名
+boolean music_success;  //可播放音乐
 const int btnUP = 2;
 const int btnDOWN = 3;
 const int btnLEFT = 4;
@@ -28,9 +34,12 @@ const int btnA = 6;
 const int btnB = 7;
 const int btnSTART = 8;
 const int btnSELECT = 9;
+const int battery = 10;
 void setup()
 {
   //Serial.begin(9600);
+  pinMode(battery, OUTPUT);
+  digitalWrite(battery, HIGH);
   randomSeed(analogRead(0));
   myGLCD.InitLCD();
   myGLCD.InitLCD();//Initializes twice to improve reliability
@@ -41,6 +50,7 @@ void setup()
     return;
   }
   read_hz();  //连接字库
+  init_music();  //初始化音乐功能
   show_apimg(0, 0, "sys/main.api");  //开机界面
   while(digitalRead(btnSTART) == HIGH)  //按START继续
     continue;

@@ -16,6 +16,7 @@ int get_file_amount(char* dirname, int showdir)
   int amount = 0;
   File dir, entry;
   dir = SD.open(dirname);
+  dir.rewindDirectory();
   while(true)
   {
     entry = dir.openNextFile();  //打开所有文件，计算数量
@@ -182,6 +183,30 @@ void change_file_list_point(int change)
       draw_file_list_point(file_list_point, 255, 0, 0);
     }
   }
+  else if(change == -9)
+  {
+    if(file_offset - 9 >= 0)
+    {
+      draw_file_list_point(file_list_point, 255, 255, 255);
+      file_offset -= 9;
+      read_file_list(workdirname, file_offset, workdircase);
+      show_file_menu();
+      draw_file_list_point(file_list_point, 255, 0, 0);
+    }
+  }
+  else if(change == 9)
+  {
+    if(file_offset + 9 < file_amount)
+    {
+      draw_file_list_point(file_list_point, 255, 255, 255);
+      file_offset += 9;
+      read_file_list(workdirname, file_offset, workdircase);
+      show_file_menu();
+      if(file_list_point >= file_amount - file_offset)
+        file_list_point = file_amount - file_offset - 1;
+      draw_file_list_point(file_list_point, 255, 0, 0);
+    }
+  }
   else if(file_list_point + change < file_amount - file_offset)  //当前页内移动光标
   {
     draw_file_list_point(file_list_point, 255, 255, 255);
@@ -197,6 +222,7 @@ void draw_file_list_point(int point, int r, int g, int b)
   switch(work)
   {
     case BOOK_MENU:print_message(point, 10, 99, g, g, b, 1); break;
+    case MUSIC_MENU:print_message(point, 10, 99, g, g, b, 1); break;
   }
   return;
 }
@@ -205,31 +231,35 @@ void print_message(int point, int x, int y, int r, int g, int b, int dot)
   switch(work)
   {
     case BOOK_MENU:print_size(point, x, y, r, g, b, dot); break;
+    case MUSIC_MENU:print_size(point, x, y, r, g, b, dot); break;
   }
 }
 void print_size(int point, int x, int y, int r, int g, int b, int dot)
 {
   char msg[10];
   char unit[4][3] = {"B", "KB", "MB", "GB"};
-  char txtname[32];
-  int unit_index = 0, size_temp;
-  File myTXT;
+  char filename[32];
+  int unit_index = 0;
+  uint32_t size_temp;
+  File entry;
   switch(work)
   {
-    case BOOK_MENU: strcpy(txtname, "book/"); break;
+    case BOOK_MENU: strcpy(filename, "book/");
+                    strcat(filename, file_list[file_list_point]);
+                    break;
+    case MUSIC_MENU: strcpy(filename, file_list[file_list_point]); break;
   }
-  strcat(txtname, file_list[file_list_point]);
-  if(!file_test(txtname))
+  if(!file_test(filename))
     return;
-  myTXT = SD.open(txtname);
-  size_temp = myTXT.size();  //读取文件大小
+  entry = SD.open(filename);
+  size_temp = entry.size();  //读取文件大小
   while(size_temp > 9999)  //超过4位转换单位
   {
     size_temp /= 1024;
     unit_index++;
   }
-  myTXT.close();
-  sprintf(msg, ":%d%s", size_temp, unit[unit_index]);
+  entry.close();
+  sprintf(msg, ":%d%s", (int)size_temp, unit[unit_index]);
   show_chinese_sentence(x, y, "\xB4\xF3\xD0\xA1", r, g, b, dot);//大小
   show_english(x + 32, y, msg, r, g, b, dot);
   return;

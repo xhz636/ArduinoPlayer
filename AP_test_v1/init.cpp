@@ -20,3 +20,14 @@ void init_btn()
   pinMode(btnSELECT, INPUT_PULLUP);
   return;
 }
+void init_music()
+{
+  // Setting the buffer manually for more flexibility
+  SdPlay.setWorkBuffer(bigbuf, BIGBUFSIZE);
+  SdPlay.setSDCSPin(53);
+  if (!SdPlay.init(SSDA_MODE_FULLRATE | SSDA_MODE_MONO | SSDA_MODE_AUTOWORKER))
+    music_success = false;
+  else
+    music_success = true;
+}
+
