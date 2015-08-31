@@ -1,8 +1,7 @@
 #include "common.h"
 #include "button.h"
-#include "main_menu.h"
+#include "menu.h"
 #include "book.h"
-#include "book_menu.h"
 void press_button()
 {
   if(digitalRead(btnUP) == LOW)
@@ -103,9 +102,19 @@ void press_btnA()
 {
   switch(work)
   {
-    case MAIN_MENU:if(main_menu_point == 0)into_book_menu(); break;
+    case MAIN_MENU:{
+                     switch(main_menu_point)
+                     {
+                       case 0: into_book_menu(); break;
+                       case 1: into_music_menu(); break;
+                       case 2: into_image_menu(); break;
+                       case 3: into_game_menu(); break;
+                       case 4: into_file_menu(); break;
+                     }
+                     break;
+                   }
     case BOOK_MENU:{
-                     strcpy(book_name, "txt/");
+                     strcpy(book_name, "book/");
                      strcat(book_name, file_list[file_list_point]);
                      into_book(book_name, 0);
                      break;
@@ -157,6 +166,10 @@ void press_btnB()
                        draw_book_config_point(book_config_point, 255, 0, 0);
                        break;
                      }
+    case MUSIC_MENU:exit_music_menu(); break;
+    case IMAGE_MENU:exit_image_menu(); break;
+    case GAME_MENU:exit_game_menu(); break;
+    case FILE_MENU:exit_file_menu(); break;
   }
 }
 void press_btnSTART()

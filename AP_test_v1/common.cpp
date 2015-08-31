@@ -11,7 +11,7 @@ bool file_test(char* filename)
   else
     return false;
 }
-int get_file_amount(char* dirname)
+int get_file_amount(char* dirname, int showdir)
 {
   int amount = 0;
   File dir, entry;
@@ -21,7 +21,12 @@ int get_file_amount(char* dirname)
     entry = dir.openNextFile();  //打开所有文件，计算数量
     if(entry)
     {
-      amount++;
+      switch(showdir)
+      {
+        case 0: if(!entry.isDirectory()) amount++; break;  //只显示文件
+        case 1: if(entry.isDirectory()) amount++; break;  //只显示目录
+        case 2: amount++; break;
+      }
       entry.close();
     }
     else
@@ -30,7 +35,7 @@ int get_file_amount(char* dirname)
   dir.close();
   return amount;
 }
-void read_file_list(char* dirname, int offset)
+void read_file_list(char* dirname, int offset, int showdir)
 {
   int i;
   File dir, entry;
@@ -46,11 +51,16 @@ void read_file_list(char* dirname, int offset)
     }
     else
     {
-      if(!entry)
-        file_list[i][0] = '\0';
-      else
+      file_list[i][0] = '\0';
+      if(entry)
       {
-        strcpy(file_list[i], entry.name());  //保存文件名
+        //保存文件名
+        switch(showdir)
+        {
+          case 0: if(!entry.isDirectory()) strcpy(file_list[i], entry.name()); break;  //只显示文件
+          case 1: if(entry.isDirectory()) strcpy(file_list[i], entry.name()); break;  //只显示目录
+          case 2: strcpy(file_list[i], entry.name()); break;
+        }
         entry.close();
       }
     }
@@ -129,7 +139,7 @@ void change_file_list_point(int change)
     {
       draw_file_list_point(file_list_point, 255, 255, 255);
       file_offset -= 9;
-      read_file_list("txt", file_offset);
+      read_file_list("book", file_offset, 0);
       show_file_menu();
       file_list_point = 8;
       draw_file_list_point(file_list_point, 255, 0, 0);
@@ -141,7 +151,7 @@ void change_file_list_point(int change)
     {
       draw_file_list_point(file_list_point, 255, 255, 255);
       file_offset += 9;
-      read_file_list("txt", file_offset);
+      read_file_list("book", file_offset, 0);
       show_file_menu();
       file_list_point = 0;
       draw_file_list_point(file_list_point, 255, 0, 0);
@@ -181,7 +191,7 @@ void print_size(int point, int x, int y, int r, int g, int b, int dot)
   File myTXT;
   switch(work)
   {
-    case BOOK_MENU: strcpy(txtname, "txt/"); break;
+    case BOOK_MENU: strcpy(txtname, "book/"); break;
   }
   strcat(txtname, file_list[file_list_point]);
   if(!file_test(txtname))

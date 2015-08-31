@@ -1,7 +1,6 @@
 #include "common.h"
 #include "book.h"
-#include "main_menu.h"
-#include "book_menu.h"
+#include "menu.h"
 uint32_t read_txt(char* txtname, uint32_t offset, int r, int g, int b, int dot)
 {
   File myTXT;
