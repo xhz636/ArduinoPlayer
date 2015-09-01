@@ -71,27 +71,27 @@ void into_menu()
   switch(main_menu_point)
   {
     case 0: work = BOOK_MENU;
-            workdircase = 0;
+            workdircase = ONLY_FILE;
             strcpy(workdirname, "book");
             strcpy(imagename, "sys/book.api");
             break;
     case 1: work = MUSIC_MENU;
-            workdircase = 0;
+            workdircase = ONLY_FILE;
             strcpy(workdirname, "/");
             strcpy(imagename, "sys/music.api");
             break;
     case 2: work = IMAGE_MENU;
-            workdircase = 0;
+            workdircase = ONLY_FILE;
             strcpy(workdirname, "iamge");
             strcpy(imagename, "sys/image.api");
             break;
     case 3: work = GAME_MENU;
-            workdircase = 1;
+            workdircase = ONLY_DIR;
             strcpy(workdirname, "game");
             strcpy(imagename, "sys/game.api");
             break;
     case 4: work = FILE_MENU;
-            workdircase = 2;
+            workdircase = BOTH_FILE_DIR;
             strcpy(workdirname, "/");
             strcpy(imagename, "sys/file.api");
             break;

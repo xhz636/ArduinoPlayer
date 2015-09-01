@@ -24,9 +24,9 @@ int get_file_amount(char* dirname, int showdir)
     {
       switch(showdir)
       {
-        case 0: if(!entry.isDirectory()) amount++; break;  //只显示文件
-        case 1: if(entry.isDirectory()) amount++; break;  //只显示目录
-        case 2: amount++; break;
+        case ONLY_FILE: if(!entry.isDirectory()) amount++; break;  //只显示文件
+        case ONLY_DIR: if(entry.isDirectory()) amount++; break;  //只显示目录
+        case BOTH_FILE_DIR: amount++; break;
       }
       entry.close();
     }
@@ -49,19 +49,19 @@ void read_file_list(char* dirname, int offset, int showdir)
     {
       switch(showdir)
       {
-        case 0: if(!entry.isDirectory())
+        case ONLY_FILE: if(!entry.isDirectory())
                 {
                   offset--;
                   i--;
                 }
                 break;
-        case 1: if(entry.isDirectory())
+        case ONLY_DIR: if(entry.isDirectory())
                 {
                   offset--;
                   i--;
                 }
                 break;
-        case 2: offset--;
+        case BOTH_FILE_DIR: offset--;
                 i--;
                 break;
       }
@@ -75,17 +75,17 @@ void read_file_list(char* dirname, int offset, int showdir)
         //保存文件名
         switch(showdir)
         {
-          case 0: if(!entry.isDirectory())
+          case ONLY_FILE: if(!entry.isDirectory())
                     strcpy(file_list[i], entry.name());
                   else
                     i--;
                   break;  //只显示文件
-          case 1: if(entry.isDirectory())
+          case ONLY_DIR: if(entry.isDirectory())
                     strcpy(file_list[i], entry.name());
                   else
                     i--;
                   break;  //只显示目录
-          case 2: strcpy(file_list[i], entry.name()); break;
+          case BOTH_FILE_DIR: strcpy(file_list[i], entry.name()); break;
         }
         entry.close();
       }
@@ -222,7 +222,7 @@ void draw_file_list_point(int point, int r, int g, int b)
   switch(work)
   {
     case BOOK_MENU:print_message(point, 10, 99, g, g, b, 1); break;
-    case MUSIC_MENU:print_message(point, 10, 99, g, g, b, 1); break;
+    case MUSIC_MENU:print_message(point, 10, 115, g, g, b, 1); break;
   }
   return;
 }
@@ -231,7 +231,9 @@ void print_message(int point, int x, int y, int r, int g, int b, int dot)
   switch(work)
   {
     case BOOK_MENU:print_size(point, x, y, r, g, b, dot); break;
-    case MUSIC_MENU:print_size(point, x, y, r, g, b, dot); break;
+    case MUSIC_MENU:print_size(point, x, y, r, g, b, dot);
+                    print_music_long(point, x, y + 16, r, g, b, dot);
+                    break;
   }
 }
 void print_size(int point, int x, int y, int r, int g, int b, int dot)
@@ -261,6 +263,25 @@ void print_size(int point, int x, int y, int r, int g, int b, int dot)
   entry.close();
   sprintf(msg, ":%d%s", (int)size_temp, unit[unit_index]);
   show_chinese_sentence(x, y, "\xB4\xF3\xD0\xA1", r, g, b, dot);//大小
+  show_english(x + 32, y, msg, r, g, b, dot);
+  return;
+}
+void print_music_long(int point, int x, int y, int r, int g, int b, int dot)
+{
+  char msg[10];
+  char filename[32];
+  uint32_t size_temp;
+  int timelong;
+  File entry;
+  strcpy(filename, file_list[file_list_point]);
+  if(!file_test(filename))
+    return;
+  entry = SD.open(filename);
+  size_temp = entry.size();  //读取文件大小
+  entry.close();
+  timelong = size_temp / 62500;
+  sprintf(msg, ":%02d:%02d", timelong / 60, timelong % 60);
+  show_chinese_sentence(x, y, "\xB3\xA4\xB6\xC8", r, g, b, dot);//长度
   show_english(x + 32, y, msg, r, g, b, dot);
   return;
 }

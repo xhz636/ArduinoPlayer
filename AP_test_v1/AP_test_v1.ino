@@ -26,6 +26,7 @@ uint32_t temp_offset_rate;  //电子书选项中的临时偏移比例
 boolean in_pallet;  //调色板标志
 char music_name[16];  //音乐名
 boolean music_success;  //可播放音乐
+int music_state, music_mode;  //播放状态、播放模式
 const int btnUP = 2;
 const int btnDOWN = 3;
 const int btnLEFT = 4;

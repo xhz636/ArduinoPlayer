@@ -24,6 +24,7 @@ extern uint32_t temp_offset_rate;
 extern boolean in_pallet;
 extern char music_name[16];
 extern boolean music_success;
+extern int music_state, music_mode;
 extern const int btnUP;
 extern const int btnDOWN;
 extern const int btnLEFT;
@@ -45,6 +46,24 @@ enum WHERE
   GAME_MENU,  //游戏文件列表
   FILE_MENU  //总文件列表
 };
+enum SHOWDIR
+{
+  ONLY_FILE,  //只显示文件
+  ONLY_DIR,  //只显示文件夹
+  BOTH_FILE_DIR  //全部显示
+};
+enum MUSICSTATE
+{
+  ISPLAY,  //播放
+  ISPAUSE,  //暂停
+  ISSTOP  //停止
+};
+enum MUSICMODE
+{
+  SINGLE,  //单曲循环
+  ORDER,  //顺序循环
+  RANDOM  //随机播放
+};
 bool file_test(char* filename);  //测试文件
 int get_file_amount(char* dirname, int showdir);  //计算文件夹内文件数量
 void read_file_list(char* dirname, int offset, int showdir);  //载入文件列表
@@ -57,4 +76,5 @@ void change_file_list_point(int change);  //改变光标
 void draw_file_list_point(int point, int r, int g, int b);  //画光标
 void print_message(int point, int x, int y, int r, int g, int b, int dot);  //输出信息
 void print_size(int point, int x, int y, int r, int g, int b, int dot);  //输出文件大小
+void print_music_long(int point, int x, int y, int r, int g, int b, int dot);  //输出音乐长度
 #endif
