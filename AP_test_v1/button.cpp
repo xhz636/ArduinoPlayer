@@ -40,6 +40,7 @@ void press_btnUP()
                        delay(200);
                        break;
                      }
+    case MUSIC_PLAY:change_next_music(-1); break;
   }
 }
 void press_btnDOWN()
@@ -60,6 +61,7 @@ void press_btnDOWN()
                        delay(200);
                        break;
                      }
+    case MUSIC_PLAY:change_next_music(1); break;
   }
 }
 void press_btnLEFT()
@@ -90,6 +92,7 @@ void press_btnLEFT()
                        }
                      }
                      break;
+    case MUSIC_PLAY:change_next_music(-1); break;
   }
 }
 void press_btnRIGHT()
@@ -119,6 +122,7 @@ void press_btnRIGHT()
                          case 3: change_offset(1); break;
                        }
                      }
+    case MUSIC_PLAY:change_next_music(1); break;
   }
 }
 void press_btnA()
@@ -168,6 +172,7 @@ void press_btnA()
                       into_music(music_name);
                       break;
                     }
+    case MUSIC_PLAY: stop_music(); break;
   }
 }
 void press_btnB()
@@ -197,6 +202,7 @@ void press_btnSTART()
   switch(work)
   {
     case BOOK_SHOW:into_book_config(); break;
+    case MUSIC_PLAY:change_music_state(); break;
   }
 }
 void press_btnSELECT()
@@ -209,6 +215,7 @@ void press_btnSELECT()
                        delay(200);
                        break;
                      }
+    case MUSIC_PLAY:change_music_mode(); break;
   }
 }
 

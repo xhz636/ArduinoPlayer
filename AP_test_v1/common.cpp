@@ -217,40 +217,41 @@ void change_file_list_point(int change)
 }
 void draw_file_list_point(int point, int r, int g, int b)
 {
+  char filename[32];
   myGLCD.setColor(r, g, b);
   myGLCD.drawRect(109, 2 + 19 * point, 208, 21 + 19 * point);
   switch(work)
   {
-    case BOOK_MENU:print_message(point, 10, 99, g, g, b, 1); break;
-    case MUSIC_MENU:print_message(point, 10, 115, g, g, b, 1); break;
+    case BOOK_MENU: {
+                      sprintf(filename, "book/%s", file_list[point]);
+                      print_message(filename, 10, 99, g, g, b, 1);
+                      break;
+                    }
+    case MUSIC_MENU:{
+                      strcpy(filename, file_list[point]);
+                      print_message(filename, 10, 115, g, g, b, 1);
+                      break;
+                    }
   }
   return;
 }
-void print_message(int point, int x, int y, int r, int g, int b, int dot)
+void print_message(char* filename, int x, int y, int r, int g, int b, int dot)
 {
   switch(work)
   {
-    case BOOK_MENU:print_size(point, x, y, r, g, b, dot); break;
-    case MUSIC_MENU:print_size(point, x, y, r, g, b, dot);
-                    print_music_long(point, x, y + 16, r, g, b, dot);
+    case BOOK_MENU:print_size(filename, x, y, r, g, b, dot); break;
+    case MUSIC_MENU:print_size(filename, x, y, r, g, b, dot);
+                    print_music_long(filename, x, y + 16, r, g, b, dot);
                     break;
   }
 }
-void print_size(int point, int x, int y, int r, int g, int b, int dot)
+void print_size(char* filename, int x, int y, int r, int g, int b, int dot)
 {
   char msg[10];
   char unit[4][3] = {"B", "KB", "MB", "GB"};
-  char filename[32];
   int unit_index = 0;
   uint32_t size_temp;
   File entry;
-  switch(work)
-  {
-    case BOOK_MENU: strcpy(filename, "book/");
-                    strcat(filename, file_list[file_list_point]);
-                    break;
-    case MUSIC_MENU: strcpy(filename, file_list[file_list_point]); break;
-  }
   if(!file_test(filename))
     return;
   entry = SD.open(filename);
@@ -266,14 +267,12 @@ void print_size(int point, int x, int y, int r, int g, int b, int dot)
   show_english(x + 32, y, msg, r, g, b, dot);
   return;
 }
-void print_music_long(int point, int x, int y, int r, int g, int b, int dot)
+void print_music_long(char* filename, int x, int y, int r, int g, int b, int dot)
 {
   char msg[10];
-  char filename[32];
   uint32_t size_temp;
   int timelong;
   File entry;
-  strcpy(filename, file_list[file_list_point]);
   if(!file_test(filename))
     return;
   entry = SD.open(filename);

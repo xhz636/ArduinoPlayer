@@ -23,6 +23,7 @@ void init_btn()
 void init_music()
 {
   // Setting the buffer manually for more flexibility
+  randomSeed(analogRead(0));
   SdPlay.setWorkBuffer(bigbuf, BIGBUFSIZE);
   SdPlay.setSDCSPin(53);
   if (!SdPlay.init(SSDA_MODE_FULLRATE | SSDA_MODE_MONO | SSDA_MODE_AUTOWORKER))

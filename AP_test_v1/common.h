@@ -25,6 +25,7 @@ extern boolean in_pallet;
 extern char music_name[16];
 extern boolean music_success;
 extern int music_state, music_mode;
+extern int music_amount, music_offset;
 extern const int btnUP;
 extern const int btnDOWN;
 extern const int btnLEFT;
@@ -74,7 +75,7 @@ void show_chinese(int x, int y, char* s, int r, int g, int b, int dot);  //单�
 void show_chinese_sentence(int x, int y, char* sentence, int r, int g, int b, int dot);  //中文句子
 void change_file_list_point(int change);  //改变光标
 void draw_file_list_point(int point, int r, int g, int b);  //画光标
-void print_message(int point, int x, int y, int r, int g, int b, int dot);  //输出信息
-void print_size(int point, int x, int y, int r, int g, int b, int dot);  //输出文件大小
-void print_music_long(int point, int x, int y, int r, int g, int b, int dot);  //输出音乐长度
+void print_message(char* filename, int x, int y, int r, int g, int b, int dot);  //输出信息
+void print_size(char* filename, int x, int y, int r, int g, int b, int dot);  //输出文件大小
+void print_music_long(char* filename, int x, int y, int r, int g, int b, int dot);  //输出音乐长度
 #endif

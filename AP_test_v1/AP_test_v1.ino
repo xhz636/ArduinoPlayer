@@ -7,6 +7,7 @@
 #include "menu.h"
 #include "book.h"
 #include "button.h"
+#include "music.h"
 // Create static buffer 
 #define BIGBUFSIZE (2*512)
 uint8_t bigbuf[BIGBUFSIZE];
@@ -27,6 +28,7 @@ boolean in_pallet;  //调色板标志
 char music_name[16];  //音乐名
 boolean music_success;  //可播放音乐
 int music_state, music_mode;  //播放状态、播放模式
+int music_amount, music_offset;
 const int btnUP = 2;
 const int btnDOWN = 3;
 const int btnLEFT = 4;
@@ -41,7 +43,6 @@ void setup()
   //Serial.begin(9600);
   pinMode(battery, OUTPUT);
   digitalWrite(battery, HIGH);
-  randomSeed(analogRead(0));
   myGLCD.InitLCD();
   myGLCD.InitLCD();//Initializes twice to improve reliability
   init_btn();  //初始化按钮
@@ -60,4 +61,6 @@ void setup()
 void loop()
 {
   press_button();  //检测按钮
+  if(work == MUSIC_PLAY)
+    check_music();
 }
