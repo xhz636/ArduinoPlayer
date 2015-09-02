@@ -217,9 +217,12 @@ void change_file_list_point(int change)
 }
 void draw_file_list_point(int point, int r, int g, int b)
 {
-  char filename[32];
+  char filename[128];
+  int scroll;
   myGLCD.setColor(r, g, b);
   myGLCD.drawRect(109, 2 + 19 * point, 208, 21 + 19 * point);
+  scroll = (int)((double)(file_list_point + file_offset) / (double)(file_amount - 1) * 169.0) + 3;
+  myGLCD.drawLine(211, scroll, 217, scroll);
   switch(work)
   {
     case BOOK_MENU: {
@@ -237,6 +240,14 @@ void draw_file_list_point(int point, int r, int g, int b)
                        print_message(filename, 10, 99, g, g, b, 1);
                        break;
                      }
+    case FILE_MENU: {
+                      if(strlen(workdirname) == 1)
+                        sprintf(filename, "%s%s", workdirname, file_list[point]);
+                      else
+                        sprintf(filename, "%s/%s", workdirname, file_list[point]);
+                      print_message(filename, 10, 99, g, g, b, 1);
+                      break;
+                    }
   }
   return;
 }
@@ -251,6 +262,8 @@ void print_message(char* filename, int x, int y, int r, int g, int b, int dot)
     case IMAGE_MENU:print_size(filename, x, y, r, g, b, dot);
                     print_image_size(filename, x, y + 16, r, g, b, dot);
                     break;
+    case FILE_MENU: print_size(filename, x, y, r, g, b, dot);
+                    break;
   }
 }
 void print_size(char* filename, int x, int y, int r, int g, int b, int dot)
@@ -261,8 +274,22 @@ void print_size(char* filename, int x, int y, int r, int g, int b, int dot)
   uint32_t size_temp;
   File entry;
   if(!file_test(filename))
+  {
+    entry = SD.open(filename);
+    if(entry.isDirectory())
+    {
+      entry.close();
+      show_chinese_sentence(x, y, "\xD5\xE2\xCA\xC7\xC4\xBF\xC2\xBC", r, g, b, dot);//这是目录
+    }
     return;
+  }
   entry = SD.open(filename);
+  if(entry.isDirectory())
+  {
+    entry.close();
+    show_chinese_sentence(x, y, "\xD5\xE2\xCA\xC7\xCA\xBF\xC2\xBC", r, g, b, dot);//这是目录
+    return;
+  }
   size_temp = entry.size();  //读取文件大小
   while(size_temp > 9999)  //超过4位转换单位
   {

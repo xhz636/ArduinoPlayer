@@ -14,7 +14,7 @@ uint8_t bigbuf[BIGBUFSIZE];
 UTFT myGLCD(QD220A, A2, A1, A5, A4, A3);
 File HZK, ASCII;
 int work;  //当前所在位置
-char workdirname[32];
+char workdirname[128];
 int workdircase;
 int main_menu_point, file_list_point, book_config_point;  //主菜单、文件菜单、电子书选项光标位置
 int file_amount, file_offset;  //文件菜单中文件总量、文件偏移
@@ -37,6 +37,7 @@ int image_width_insample, image_height_insample;
 int image_point;
 int image_amount, image_offset;
 double image_sample;
+int file_delete_point;
 const int btnUP = 2;
 const int btnDOWN = 3;
 const int btnLEFT = 4;

@@ -9,7 +9,7 @@ void show_main_menu()
   show_apimg(181 - 31, 39 - 31, "sys/image.api");  //图片
   show_apimg(39 -31, 110 - 31, "sys/game.api");  //游戏
   show_apimg(110 - 31, 110 - 31, "sys/file.api");  //文件
-  show_apimg(181 - 31, 110 - 31, "sys/set.api");  //设置
+  show_apimg(181 - 31, 110 - 31, "sys/about.api");  //关于
   work = MAIN_MENU;
   main_menu_point = 0;
   draw_main_menu_point(main_menu_point, 255, 0, 0);
@@ -95,15 +95,23 @@ void into_menu()
             strcpy(workdirname, "/");
             strcpy(imagename, "sys/file.api");
             break;
+    case 5: return;
   }
-  file_amount = get_file_amount(workdirname, workdircase);  //book文件夹内文件数量
-  file_offset = 0;
-  read_file_list(workdirname, file_offset, workdircase);  //载入文件列表
   myGLCD.fillScr(255, 255, 255);
   show_apimg(23, 23, imagename);  //显示图标
-  show_file_menu();  //显示文件列表
-  file_list_point = 0;
-  draw_file_list_point(file_list_point, 255, 0, 0);  //光标
+  file_amount = get_file_amount(workdirname, workdircase);  //文件数量
+  file_offset = 0;
+  read_file_list(workdirname, file_offset, workdircase);  //载入文件列表
+  if(file_amount)
+  {
+    show_file_menu();  //显示文件列表
+    file_list_point = 0;
+    myGLCD.setColor(0, 0, 255);
+    myGLCD.drawRect(210, 2, 218, 173);
+    draw_file_list_point(file_list_point, 255, 0, 0);  //光标
+  }
+  else
+    show_chinese_sentence(111, 4, "\xCE\xDE\xCE\xC4\xBC\xFE", 0, 0, 0, 1);  //无文件
   return;
 }
 void exit_menu()

@@ -4,6 +4,7 @@
 #include "book.h"
 #include "music.h"
 #include "image.h"
+#include "file.h"
 void press_button()
 {
   if(digitalRead(btnUP) == LOW)
@@ -110,6 +111,7 @@ void press_btnLEFT()
                                 change_image_top(-1);
                               break;
                     }
+    case FILE_DELETE: choose_no(); break;
   }
 }
 void press_btnRIGHT()
@@ -154,6 +156,7 @@ void press_btnRIGHT()
                                 change_image_top(1);
                               break;
                     }
+    case FILE_DELETE: choose_yes(); break;
   }
 }
 void press_btnA()
@@ -218,6 +221,12 @@ void press_btnA()
                       case 6: image_next(-1); break;
                       case 7: image_next(1); break;
                     }
+    case FILE_MENU: file_into(); break;
+    case FILE_DELETE: if(file_delete_point == 0)
+                        file_no_delete();
+                      else
+                        file_yes_delete();
+                      break;
   }
 }
 void press_btnB()
@@ -228,7 +237,6 @@ void press_btnB()
     case MUSIC_MENU:
     case IMAGE_MENU:
     case GAME_MENU:
-    case FILE_MENU:
                    exit_menu(); break;
     case BOOK_SHOW:exit_book(); break;
     case BOOK_CONFIG:if(in_pallet)
@@ -241,6 +249,8 @@ void press_btnB()
                      }
     case MUSIC_PLAY:exit_music(); break;
     case IMAGE_SHOW:exit_image(); break;
+    case FILE_MENU: file_back(); break;
+    case FILE_DELETE:file_no_delete(); break;
   }
 }
 void press_btnSTART()
@@ -262,6 +272,7 @@ void press_btnSELECT()
                        break;
                      }
     case MUSIC_PLAY:change_music_mode(); break;
+    case FILE_MENU: into_file_delete(); break;
   }
 }
 

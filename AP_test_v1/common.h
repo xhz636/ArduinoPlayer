@@ -11,7 +11,7 @@ extern uint8_t bigbuf[BIGBUFSIZE];
 extern UTFT myGLCD;
 extern File HZK, ASCII;
 extern int work;
-extern char workdirname[32];
+extern char workdirname[128];
 extern int workdircase;
 extern int main_menu_point, file_list_point, book_config_point;;
 extern int file_amount, file_offset;
@@ -34,6 +34,7 @@ extern int image_width_insample, image_height_insample;
 extern int image_point;
 extern int image_amount, image_offset;
 extern double image_sample;
+extern int file_delete_point;
 extern const int btnUP;
 extern const int btnDOWN;
 extern const int btnLEFT;
@@ -54,7 +55,8 @@ enum WHERE
   IMAGE_MENU,  //图片文件列表
   IMAGE_SHOW,  //图片显示界面
   GAME_MENU,  //游戏文件列表
-  FILE_MENU  //总文件列表
+  FILE_MENU,  //总文件列表
+  FILE_DELETE  //文件删除界面
 };
 enum SHOWDIR
 {
