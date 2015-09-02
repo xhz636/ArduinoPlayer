@@ -73,15 +73,68 @@ void next_book(char* txtname)
     return;
   myGLCD.fillScr(txtbr, txtbg, txtbb);
   txt_now_offset = txt_next_offset;
-  txt_next_offset = read_txt(txtname, txt_next_offset, txtfr, txtfg, txtfb, txtdot);
+  txt_next_offset = read_txt(txtname, txt_now_offset, txtfr, txtfg, txtfb, txtdot);
 }
 void last_book(char* txtname)
 {
-  
+  if(txt_now_offset == 0)
+    return;
+  txt_now_offset = find_last_offset(txtname);
+  check_txt_offset();
+  myGLCD.fillScr(txtbr, txtbg, txtbb);
+  txt_next_offset = read_txt(txtname, txt_now_offset, txtfr, txtfg, txtfb, txtdot);
 }
 uint32_t find_last_offset(char* txtname)
 {
-
+  File myTXT;
+  uint32_t temp_offset, leave;
+  int i, j, x_num, y_num;
+  char temp;
+  if(!file_test(txtname))  //测试文件
+    return 0;
+  temp_offset = txt_now_offset - 1;
+  leave = 0;
+  myTXT = SD.open(txtname);
+  x_num = 220 / (8 * txtdot);  //每行字符数
+  y_num = 176 / (16 * txtdot);  //行数
+  for(i = 0; i < y_num; i++)
+    for(j = 0; j < x_num; j++)
+    {
+      if(temp_offset == 0 || temp_offset > 4294967290LU)
+      {
+        temp_offset = 0;
+        break;
+      }
+      myTXT.seek(temp_offset);
+      temp = myTXT.read();
+      if((temp & 0xFF) < 0x80)  //标准ASCII
+      {
+        if(temp == 0x0A)
+        {
+          temp_offset -= 2;
+          break;
+        }
+        temp_offset--;
+      }
+      else
+      {
+        if(j < x_num - 1 || i < y_num - 1)
+        {
+          if(j >= x_num - 1)  //换行
+          {
+            i++;
+            j = 0;
+          }
+          j++;
+        }
+        else
+          leave = 2;  //最后一个汉字未显示
+        temp_offset -= 2;
+      }
+    }
+  temp_offset += leave;
+  myTXT.close();
+  return temp_offset;
 }
 void exit_book()
 {
@@ -119,6 +172,7 @@ void into_book_config()
   show_chinese_sentence(178, 136, "\xC8\xB7\xB6\xA8", 0, 0, 0, 1);//确定
   show_chinese_sentence(178, 156, "\xC8\xA1\xCF\xFB", 0, 0, 0, 1);//取消
   draw_book_config_point(book_config_point, 255, 0, 0);
+  txt_offset_changed = false;
 }
 void draw_book_config_point(int point, int r, int g, int b)
 {
@@ -200,6 +254,7 @@ void change_offset(int change)
   char temp[4];
   if(temp_offset_rate + change <= 100 && temp_offset_rate + change >= 0)  //数值限定在0~100
   {
+    txt_offset_changed = true;
     sprintf(temp, "%d", temp_offset_rate);
     show_english(82, 156, temp, 255, 255, 255, 1);
     temp_offset_rate += change;
@@ -213,4 +268,31 @@ void exit_book_config()
   txt_next_offset = txt_now_offset;
   next_book(book_name);
 }
-
+void check_txt_offset()
+{
+  File myTXT;
+  int count;
+  unsigned char temp;
+  if(txt_now_offset > 4294967290LU)
+    txt_now_offset = 0;
+  if(!file_test(book_name))  //测试文件
+    return;
+  myTXT = SD.open(book_name);
+  myTXT.seek(txt_now_offset);
+  count = 0;
+  while(1)
+  {
+    temp = myTXT.read();
+    if((temp & 0xFF) < 0x80)  //标准ASCII
+      break;
+    else
+      count++;
+  }
+  if(count % 2 != 0)
+    txt_now_offset++;
+  myTXT.seek(txt_now_offset);
+  temp = myTXT.read();
+  if(temp == 0x0D)
+    txt_now_offset += 2;
+  myTXT.close();
+}

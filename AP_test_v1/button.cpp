@@ -195,9 +195,13 @@ void press_btnA()
                                   txtfg = temp_g[1];
                                   txtfb = temp_b[1];
                                   txtdot = temp_dot;
-                                  txt_now_offset = txt_max_offset * temp_offset_rate / 100;
-                                  if(txt_now_offset >= txt_max_offset)
-                                    txt_now_offset -= 20;
+                                  if(txt_offset_changed)
+                                  {
+                                    txt_now_offset = txt_max_offset * temp_offset_rate / 100;
+                                    if(txt_now_offset >= txt_max_offset)
+                                      txt_now_offset -= 20;
+                                    check_txt_offset();
+                                  }
                                 }
                          case 5:exit_book_config(); break;
                        }

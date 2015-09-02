@@ -15,4 +15,5 @@ void change_pallet_point(int change);  //改变调色板光标
 void change_dot(int change);  //改变字号
 void change_offset(int change);  //改变电子书偏移
 void exit_book_config();  //退出电子书选项
+void check_txt_offset();
 #endif

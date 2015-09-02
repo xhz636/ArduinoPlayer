@@ -21,10 +21,11 @@ int file_amount, file_offset;  //文件菜单中文件总量、文件偏移
 char file_list[9][16];  //文件菜单列表
 char book_name[32];  //电子书名
 int txtfr, txtfg, txtfb, txtbr, txtbg, txtbb, txtdot;  //电子书前景、背景色及字号
-uint32_t txt_last_offset, txt_now_offset, txt_next_offset, txt_max_offset;  //电子书文本相关偏移
+uint32_t txt_now_offset, txt_next_offset, txt_max_offset;  //电子书文本相关偏移
 int temp_r[2], temp_g[2], temp_b[2], temp_dot, temp_point;  //电子书选项中的临时前景、背景、字号和调色板光标
 uint32_t temp_offset_rate;  //电子书选项中的临时偏移比例
 boolean in_pallet;  //调色板标志
+boolean txt_offset_changed;
 char music_name[16];  //音乐名
 boolean music_success;  //可播放音乐
 int music_state, music_mode;  //播放状态、播放模式
