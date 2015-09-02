@@ -232,6 +232,11 @@ void draw_file_list_point(int point, int r, int g, int b)
                       print_message(filename, 10, 115, g, g, b, 1);
                       break;
                     }
+    case IMAGE_MENU: {
+                       sprintf(filename, "image/%s", file_list[point]);
+                       print_message(filename, 10, 99, g, g, b, 1);
+                       break;
+                     }
   }
   return;
 }
@@ -242,6 +247,9 @@ void print_message(char* filename, int x, int y, int r, int g, int b, int dot)
     case BOOK_MENU:print_size(filename, x, y, r, g, b, dot); break;
     case MUSIC_MENU:print_size(filename, x, y, r, g, b, dot);
                     print_music_long(filename, x, y + 16, r, g, b, dot);
+                    break;
+    case IMAGE_MENU:print_size(filename, x, y, r, g, b, dot);
+                    print_image_size(filename, x, y + 16, r, g, b, dot);
                     break;
   }
 }
@@ -282,6 +290,33 @@ void print_music_long(char* filename, int x, int y, int r, int g, int b, int dot
   sprintf(msg, ":%02d:%02d", timelong / 60, timelong % 60);
   show_chinese_sentence(x, y, "\xB3\xA4\xB6\xC8", r, g, b, dot);//长度
   show_english(x + 32, y, msg, r, g, b, dot);
+  return;
+}
+void read_image_size(char* imagename)
+{
+  unsigned char temp[2];
+  File entry;
+  if(!file_test(imagename))
+    return;
+  entry = SD.open(imagename);
+  temp[0] = entry.read();
+  temp[1] = entry.read();
+  image_width = *(unsigned short*)temp;  //读取图片宽度
+  temp[0] = entry.read();
+  temp[1] = entry.read();
+  image_height = *(unsigned short*)temp;  //读取图片高度
+  entry.close();
+}
+void print_image_size(char* filename, int x, int y, int r, int g, int b, int dot)
+{
+  char msg[10];
+  read_image_size(filename);
+  sprintf(msg, ":%hu", image_width);
+  show_chinese_sentence(x, y, "\xBF\xED\xB6\xC8", r, g, b, dot);//宽度
+  show_english(x + 32, y, msg, r, g, b, dot);
+  sprintf(msg, ":%hu", image_height);
+  show_chinese_sentence(x, y + 16, "\xB8\xDF\xB6\xC8", r, g, b, dot);//高度
+  show_english(x + 32, y + 16, msg, r, g, b, dot);
   return;
 }
 

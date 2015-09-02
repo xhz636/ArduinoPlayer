@@ -29,6 +29,12 @@ char music_name[16];  //音乐名
 boolean music_success;  //可播放音乐
 int music_state, music_mode;  //播放状态、播放模式
 int music_amount, music_offset;
+char image_name[32];
+int image_mode, image_state, image_temp_mode;
+int image_left_offset, image_top_offset, image_temp_left_offset, image_temp_top_offset;
+unsigned short image_width, image_height;
+int image_point;
+int image_amount, image_offset;
 const int btnUP = 2;
 const int btnDOWN = 3;
 const int btnLEFT = 4;

@@ -26,6 +26,12 @@ extern char music_name[16];
 extern boolean music_success;
 extern int music_state, music_mode;
 extern int music_amount, music_offset;
+extern char image_name[32];
+extern int image_mode, image_state, image_temp_mode;
+extern int image_left_offset, image_top_offset, image_temp_left_offset, image_temp_top_offset;
+extern unsigned short image_width, image_height;
+extern int image_point;
+extern int image_amount, image_offset;
 extern const int btnUP;
 extern const int btnDOWN;
 extern const int btnLEFT;
@@ -44,6 +50,7 @@ enum WHERE
   MUSIC_MENU,  //音乐文件列表
   MUSIC_PLAY,  //音乐播放界面
   IMAGE_MENU,  //图片文件列表
+  IMAGE_SHOW,  //图片显示界面
   GAME_MENU,  //游戏文件列表
   FILE_MENU  //总文件列表
 };
@@ -65,6 +72,20 @@ enum MUSICMODE
   ORDER,  //顺序循环
   RANDOM  //随机播放
 };
+enum IMAGEMODE
+{
+  AUTOSIZE,  //自动适应屏幕
+  FULLSIZE,  //原始比例
+  HALFSIZE,  //50%比例
+  QTRSIZE  //25%比例
+};
+enum IMAGESTATE
+{
+  NORMAL,  //原始位置
+  LEFTSPIN,  //逆时针
+  RIGHTSPIN,  //顺时针
+  SEMISPIN  //旋转半周
+};
 bool file_test(char* filename);  //测试文件
 int get_file_amount(char* dirname, int showdir);  //计算文件夹内文件数量
 void read_file_list(char* dirname, int offset, int showdir);  //载入文件列表
@@ -78,4 +99,6 @@ void draw_file_list_point(int point, int r, int g, int b);  //画光标
 void print_message(char* filename, int x, int y, int r, int g, int b, int dot);  //输出信息
 void print_size(char* filename, int x, int y, int r, int g, int b, int dot);  //输出文件大小
 void print_music_long(char* filename, int x, int y, int r, int g, int b, int dot);  //输出音乐长度
+void read_image_size(char* imagename);
+void print_image_size(char* filename, int x, int y, int r, int g, int b, int dot);  //输出图片大小
 #endif

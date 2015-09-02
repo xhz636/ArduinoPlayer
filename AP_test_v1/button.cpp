@@ -3,6 +3,7 @@
 #include "menu.h"
 #include "book.h"
 #include "music.h"
+#include "image.h"
 void press_button()
 {
   if(digitalRead(btnUP) == LOW)
@@ -41,6 +42,7 @@ void press_btnUP()
                        break;
                      }
     case MUSIC_PLAY:change_next_music(-1); break;
+    case IMAGE_SHOW:change_image_point(-1); break;
   }
 }
 void press_btnDOWN()
@@ -62,6 +64,7 @@ void press_btnDOWN()
                        break;
                      }
     case MUSIC_PLAY:change_next_music(1); break;
+    case IMAGE_SHOW:change_image_point(1); break;
   }
 }
 void press_btnLEFT()
@@ -93,6 +96,20 @@ void press_btnLEFT()
                      }
                      break;
     case MUSIC_PLAY:change_next_music(-1); break;
+    case IMAGE_SHOW:switch(image_point)
+                    {
+                      case 0: change_image_mode(-1); break;
+                      case 1: if(digitalRead(btnSELECT) == LOW)
+                                change_image_left(-10);
+                              else
+                                change_image_left(-1);
+                              break;
+                      case 2: if(digitalRead(btnSELECT) == LOW)
+                                change_image_top(-10);
+                              else
+                                change_image_top(-1);
+                              break;
+                    }
   }
 }
 void press_btnRIGHT()
@@ -123,6 +140,20 @@ void press_btnRIGHT()
                        }
                      }
     case MUSIC_PLAY:change_next_music(1); break;
+    case IMAGE_SHOW:switch(image_point)
+                    {
+                      case 0: change_image_mode(1); break;
+                      case 1: if(digitalRead(btnSELECT) == LOW)
+                                change_image_left(10);
+                              else
+                                change_image_left(1);
+                              break;
+                      case 2: if(digitalRead(btnSELECT) == LOW)
+                                change_image_top(10);
+                              else
+                                change_image_top(1);
+                              break;
+                    }
   }
 }
 void press_btnA()
@@ -173,6 +204,20 @@ void press_btnA()
                       break;
                     }
     case MUSIC_PLAY: stop_music(); break;
+    case IMAGE_MENU:{
+                      strcpy(image_name, "image/");
+                      strcat(image_name, file_list[file_list_point]);
+                      into_image(image_name);
+                      break;
+                    }
+    case IMAGE_SHOW:switch(image_point)
+                    {
+                      case 3: image_update(); break;
+                      case 4: image_left_spin(); break;
+                      case 5: image_right_spin(); break;
+                      case 6: image_next(-1); break;
+                      case 7: image_next(1); break;
+                    }
   }
 }
 void press_btnB()
@@ -195,6 +240,7 @@ void press_btnB()
                        break;
                      }
     case MUSIC_PLAY:exit_music(); break;
+    case IMAGE_SHOW:exit_image(); break;
   }
 }
 void press_btnSTART()

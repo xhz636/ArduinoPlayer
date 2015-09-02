@@ -20,7 +20,7 @@ void show_apimg(int x, int y, char* apimgname)
   #ifndef DEBUG
   File apimg;
   unsigned char temp[2];
-  unsigned char width, height, i, j;
+  unsigned short width, height, i, j;
   unsigned char r, g, b, a;
   if(!file_test(apimgname))
     return;
@@ -82,7 +82,7 @@ void into_menu()
             break;
     case 2: work = IMAGE_MENU;
             workdircase = ONLY_FILE;
-            strcpy(workdirname, "iamge");
+            strcpy(workdirname, "image");
             strcpy(imagename, "sys/image.api");
             break;
     case 3: work = GAME_MENU;
