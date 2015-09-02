@@ -20,4 +20,6 @@ void find_image(int amount, int offset);
 void clr_msg();
 void image_next(int change);
 void show_image(char* imagename, int mode, int state, int left, int top);
+void mode2sample(int mode, int state);
+uint32_t find_image_offset(int x, int y, int state, int left, int top, int width, int height);
 #endif
