@@ -35,6 +35,7 @@ extern int image_point;
 extern int image_amount, image_offset;
 extern double image_sample;
 extern int file_delete_point;
+extern int about_menu_point, about_help_point;
 extern const int btnUP;
 extern const int btnDOWN;
 extern const int btnLEFT;
@@ -56,7 +57,10 @@ enum WHERE
   IMAGE_SHOW,  //图片显示界面
   GAME_MENU,  //游戏文件列表
   FILE_MENU,  //总文件列表
-  FILE_DELETE  //文件删除界面
+  FILE_DELETE,  //文件删除界面
+  ABOUT_MENU,  //关于界面
+  ABOUT_HELP,  //帮助界面
+  ABOUT_AP  //系统信息界面
 };
 enum SHOWDIR
 {

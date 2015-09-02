@@ -1,5 +1,6 @@
 #include "common.h"
 #include "menu.h"
+#include "about.h"
 void show_main_menu()
 {
   myGLCD.fillScr(255, 255, 255);
@@ -95,7 +96,8 @@ void into_menu()
             strcpy(workdirname, "/");
             strcpy(imagename, "sys/file.api");
             break;
-    case 5: return;
+    case 5: into_about();
+            return;
   }
   myGLCD.fillScr(255, 255, 255);
   show_apimg(23, 23, imagename);  //显示图标

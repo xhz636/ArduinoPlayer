@@ -154,7 +154,7 @@ void show_chinese_sentence(int x, int y, char* sentence, int r, int g, int b, in
   int i, chinese_count;
   chinese_count = strlen(sentence) / 2;
   for(i = 0; i < chinese_count; i++)
-    show_chinese(x + 16 * i, y, sentence + 2 * i, r, g, b, dot);
+    show_chinese(x + 16 * dot * i, y, sentence + 2 * i, r, g, b, dot);
   return;
 }
 void change_file_list_point(int change)

@@ -38,6 +38,7 @@ int image_point;
 int image_amount, image_offset;
 double image_sample;
 int file_delete_point;
+int about_menu_point, about_help_point;
 const int btnUP = 2;
 const int btnDOWN = 3;
 const int btnLEFT = 4;

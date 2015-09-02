@@ -5,6 +5,7 @@
 #include "music.h"
 #include "image.h"
 #include "file.h"
+#include "about.h"
 void press_button()
 {
   if(digitalRead(btnUP) == LOW)
@@ -40,10 +41,11 @@ void press_btnUP()
                      {
                        change_pallet_point(-1);
                        delay(200);
-                       break;
                      }
+                     break;
     case MUSIC_PLAY:change_next_music(-1); break;
     case IMAGE_SHOW:change_image_point(-1); break;
+    case ABOUT_HELP:change_help_point(-1); break;
   }
 }
 void press_btnDOWN()
@@ -62,10 +64,11 @@ void press_btnDOWN()
                      {
                        change_pallet_point(1);
                        delay(200);
-                       break;
                      }
+                     break;
     case MUSIC_PLAY:change_next_music(1); break;
     case IMAGE_SHOW:change_image_point(1); break;
+    case ABOUT_HELP:change_help_point(1); break;
   }
 }
 void press_btnLEFT()
@@ -111,7 +114,9 @@ void press_btnLEFT()
                                 change_image_top(-1);
                               break;
                     }
+                    break;
     case FILE_DELETE: choose_no(); break;
+    case ABOUT_MENU: choose_help(); break;
   }
 }
 void press_btnRIGHT()
@@ -141,6 +146,7 @@ void press_btnRIGHT()
                          case 3: change_offset(1); break;
                        }
                      }
+                     break;
     case MUSIC_PLAY:change_next_music(1); break;
     case IMAGE_SHOW:switch(image_point)
                     {
@@ -156,7 +162,9 @@ void press_btnRIGHT()
                                 change_image_top(1);
                               break;
                     }
+                    break;
     case FILE_DELETE: choose_yes(); break;
+    case ABOUT_MENU: choose_ap(); break;
   }
 }
 void press_btnA()
@@ -175,9 +183,9 @@ void press_btnA()
                        switch(book_config_point)
                        {
                          case 0: case 1:{
-                                        draw_book_config_point(book_config_point, 255, 255, 255);
-                                        show_pallet(book_config_point);
-                                        break;
+                                          draw_book_config_point(book_config_point, 255, 255, 255);
+                                          show_pallet(book_config_point);
+                                          break;
                                         }
                          case 4:{
                                   txtbr = temp_r[0];
@@ -201,6 +209,7 @@ void press_btnA()
                        in_pallet = false;
                        draw_book_config_point(book_config_point, 255, 0, 0);
                      }
+                     break;
     case MUSIC_MENU:{
                       strcpy(music_name, file_list[file_list_point]);
                       into_music(music_name);
@@ -221,12 +230,19 @@ void press_btnA()
                       case 6: image_next(-1); break;
                       case 7: image_next(1); break;
                     }
+                    break;
     case FILE_MENU: file_into(); break;
     case FILE_DELETE: if(file_delete_point == 0)
                         file_no_delete();
                       else
                         file_yes_delete();
                       break;
+    case ABOUT_MENU:if(about_menu_point == 0)
+                      into_help();
+                    else
+                      into_ap();
+                    break;
+    case ABOUT_HELP:show_help(about_help_point); break;
   }
 }
 void press_btnB()
@@ -237,6 +253,7 @@ void press_btnB()
     case MUSIC_MENU:
     case IMAGE_MENU:
     case GAME_MENU:
+    case ABOUT_MENU:
                    exit_menu(); break;
     case BOOK_SHOW:exit_book(); break;
     case BOOK_CONFIG:if(in_pallet)
@@ -245,12 +262,15 @@ void press_btnB()
                        myGLCD.setColor(255, 255, 255);
                        myGLCD.fillRect(146, 2 + 66 * book_config_point, 209, 2 + 66 * book_config_point + 63);
                        draw_book_config_point(book_config_point, 255, 0, 0);
-                       break;
                      }
+                     break;
     case MUSIC_PLAY:exit_music(); break;
     case IMAGE_SHOW:exit_image(); break;
     case FILE_MENU: file_back(); break;
     case FILE_DELETE:file_no_delete(); break;
+    case ABOUT_HELP: 
+    case ABOUT_AP:
+                  into_about(); break;
   }
 }
 void press_btnSTART()
@@ -269,8 +289,8 @@ void press_btnSELECT()
                      {
                        change_book_config_point();
                        delay(200);
-                       break;
                      }
+                     break;
     case MUSIC_PLAY:change_music_mode(); break;
     case FILE_MENU: into_file_delete(); break;
   }
