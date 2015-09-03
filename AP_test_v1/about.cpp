@@ -54,6 +54,7 @@ void show_help_menu()
   show_chinese_sentence(4, 4 + 19 * 4, "\xD4\xC4\xB6\xC1\xC9\xE8\xD6\xC3", 0, 0, 0, 1);  //阅读设置
   show_chinese_sentence(4, 4 + 19 * 5, "\xCD\xBC\xC6\xAC\xC9\xE8\xD6\xC3", 0, 0, 0, 1);  //图片设置
   show_chinese_sentence(4, 4 + 19 * 6, "\xCE\xC4\xBC\xFE\xB2\xD9\xD7\xF7", 0, 0, 0, 1);  //文件操作
+  show_chinese_sentence(4, 4 + 19 * 7, "\xB1\xB8\xD7\xA2", 0, 0, 0, 1);  //备注
 }
 void draw_help_point(int point, int r, int g, int b)
 {
@@ -62,7 +63,7 @@ void draw_help_point(int point, int r, int g, int b)
 }
 void change_help_point(int change)
 {
-  if(about_help_point + change >= 0 && about_help_point + change < 7)
+  if(about_help_point + change >= 0 && about_help_point + change < 8)
   {
     draw_help_point(about_help_point, 255, 255, 255);
     about_help_point += change;
@@ -139,6 +140,12 @@ void show_help(int point)
             show_english(76, 4, "SELECT:", 0, 0, 0, 1);
             show_chinese_sentence(76 + 8 * 7, 4, "\xC9\xBE\xB3\xFD", 0, 0, 0, 1);  //删除
             show_chinese_sentence(76, 4 + 19, "\xD6\xA7\xB3\xD6\xB5\xDD\xB9\xE9\xC9\xBE\xB3\xFD\xCE\xC4\xBC\xFE\xBC\xD0", 0, 0, 0, 1);  //支持递归删除文件夹
+            break;
+    case 7: //备注
+            show_chinese_sentence(76, 4, "\xCE\xC4\xBC\xFE\xC3\xFB\xC7\xEB\xD3\xC3", 0, 0, 0, 1);  //文件名请用
+            show_english(76 + 16 * 5, 4, "8.3", 0, 0, 0, 1);
+            show_chinese_sentence(76 + 16 * 5 + 8 * 3, 4, "\xB8\xF1\xCA\xBD", 0, 0, 0, 1);  //格式
+            show_chinese_sentence(76, 4 + 19, "\xB2\xBB\xD6\xA7\xB3\xD6\xD6\xD0\xCE\xC4\xCE\xC4\xBC\xFE\xC3\xFB", 0, 0, 0, 1);  //不支持中文文件名
             break;
   }
 }
