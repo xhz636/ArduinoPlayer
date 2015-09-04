@@ -4,6 +4,8 @@
 #include "book.h"
 #include "music.h"
 #include "image.h"
+#include "game.h"
+#include "game_simulator.h"
 #include "file.h"
 #include "about.h"
 void press_button()
@@ -45,6 +47,7 @@ void press_btnUP()
                      break;
     case MUSIC_PLAY:change_next_music(-1); break;
     case IMAGE_SHOW:change_image_point(-1); break;
+    case GAME_START:change_game_menu_point(-1); break;
     case ABOUT_HELP:change_help_point(-1); break;
   }
 }
@@ -68,6 +71,7 @@ void press_btnDOWN()
                      break;
     case MUSIC_PLAY:change_next_music(1); break;
     case IMAGE_SHOW:change_image_point(1); break;
+    case GAME_START:change_game_menu_point(1); break;
     case ABOUT_HELP:change_help_point(1); break;
   }
 }
@@ -235,6 +239,20 @@ void press_btnA()
                       case 7: image_next(1); break;
                     }
                     break;
+    case GAME_MENU: {
+                      strcpy(game_name, "game/");
+                      strcat(game_name, file_list[file_list_point]);
+                      into_game(game_name);
+                      break;
+                    }
+    case GAME_START:switch(game_menu_point)
+                    {
+                      case 0: game_start(); break;
+                      case 1: show_game_save(); break;
+                      case 2: show_game_help(); break;
+                      case 3: exit_game(); break;
+                    }
+                    break;
     case FILE_MENU: file_into(); break;
     case FILE_DELETE: if(file_delete_point == 0)
                         file_no_delete();
@@ -270,6 +288,9 @@ void press_btnB()
                      break;
     case MUSIC_PLAY:exit_music(); break;
     case IMAGE_SHOW:exit_image(); break;
+    case GAME_SAVE: 
+    case GAME_HELP:
+                    into_game(game_name); break;
     case FILE_MENU: file_back(); break;
     case FILE_DELETE:file_no_delete(); break;
     case ABOUT_HELP: 

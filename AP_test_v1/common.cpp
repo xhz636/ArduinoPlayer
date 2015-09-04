@@ -248,6 +248,11 @@ void draw_file_list_point(int point, int r, int g, int b)
                       print_message(filename, 10, 99, g, g, b, 1);
                       break;
                     }
+    case GAME_MENU: {
+                      sprintf(filename, "game/%s", file_list[point]);
+                      print_message(filename, 10, 92, g, g, b, 1);
+                      break;
+                    }
   }
   return;
 }
@@ -263,6 +268,8 @@ void print_message(char* filename, int x, int y, int r, int g, int b, int dot)
                     print_image_size(filename, x, y + 16, r, g, b, dot);
                     break;
     case FILE_MENU: print_size(filename, x, y, r, g, b, dot);
+                    break;
+    case GAME_MENU: print_game_name(filename, x, y, r, g, b, dot);
                     break;
   }
 }
@@ -345,5 +352,37 @@ void print_image_size(char* filename, int x, int y, int r, int g, int b, int dot
   show_chinese_sentence(x, y + 16, "\xB8\xDF\xB6\xC8", r, g, b, dot);//高度
   show_english(x + 32, y + 16, msg, r, g, b, dot);
   return;
+}
+void print_game_name(char* gamename, int x, int y, int r, int g, int b, int dot)
+{
+  char introname[32];
+  char introduce[13];
+  File entry;
+  int i;
+  int line;
+  sprintf(introname, "%s/%s", gamename, "name.txt");
+  if(!file_test(introname))  //测试文件
+    return;
+  entry = SD.open(introname);
+  line = 0;
+  introduce[12] = '\0';
+  while(entry.position() < entry.size())
+  {
+    for(i = 0; i < 12; i++)
+    {
+      introduce[i] = entry.read();
+      if(introduce[i] == 0x0D)
+      {
+        introduce[i] = '\0';
+        introduce[i + 1] = entry.read();
+        show_chinese_sentence(x, y + 16 * line, introduce, r, g, b, dot);
+        line++;
+        break;
+      }
+      if(i == 11)
+        show_chinese_sentence(x, y + 16 * line, introduce, r, g, b, dot);
+    }
+  }
+  entry.close();
 }
 

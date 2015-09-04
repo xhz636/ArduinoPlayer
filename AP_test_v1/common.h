@@ -35,6 +35,10 @@ extern int image_width_insample, image_height_insample;
 extern int image_point;
 extern int image_amount, image_offset;
 extern double image_sample;
+extern char game_name[32];
+extern int game_menu_point;
+extern boolean game_playing;
+extern uint32_t game_start_time, game_end_time;
 extern int file_delete_point;
 extern int about_menu_point, about_help_point;
 extern const int btnUP;
@@ -57,6 +61,9 @@ enum WHERE
   IMAGE_MENU,  //图片文件列表
   IMAGE_SHOW,  //图片显示界面
   GAME_MENU,  //游戏文件列表
+  GAME_START,  //游戏开始界面
+  GAME_SAVE,  //游戏记录
+  GAME_HELP,  //游戏介绍
   FILE_MENU,  //总文件列表
   FILE_DELETE,  //文件删除界面
   ABOUT_MENU,  //关于界面
@@ -110,4 +117,5 @@ void print_size(char* filename, int x, int y, int r, int g, int b, int dot);  //
 void print_music_long(char* filename, int x, int y, int r, int g, int b, int dot);  //输出音乐长度
 void read_image_size(char* imagename);
 void print_image_size(char* filename, int x, int y, int r, int g, int b, int dot);  //输出图片大小
+void print_game_name(char* gamename, int x, int y, int r, int g, int b, int dot);
 #endif
