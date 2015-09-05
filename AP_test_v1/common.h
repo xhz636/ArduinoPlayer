@@ -37,7 +37,7 @@ extern int image_amount, image_offset;
 extern double image_sample;
 extern char game_name[32];
 extern int game_menu_point;
-extern boolean game_playing;
+extern volatile boolean game_playing;
 extern uint32_t game_start_time, game_end_time;
 extern int file_delete_point;
 extern int about_menu_point, about_help_point;
