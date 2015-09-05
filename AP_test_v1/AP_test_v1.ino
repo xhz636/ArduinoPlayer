@@ -40,6 +40,7 @@ int image_amount, image_offset;
 double image_sample;
 char game_name[32];
 int game_menu_point;
+int game_clear_point;
 volatile boolean game_playing;
 uint32_t game_start_time, game_end_time;
 int file_delete_point;

@@ -119,6 +119,7 @@ void press_btnLEFT()
                               break;
                     }
                     break;
+    case GAME_CLEAR: choose_no_clear(); break;
     case FILE_DELETE: choose_no(); break;
     case ABOUT_MENU: choose_help(); break;
   }
@@ -167,6 +168,7 @@ void press_btnRIGHT()
                               break;
                     }
                     break;
+    case GAME_CLEAR: choose_yes_clear(); break;
     case FILE_DELETE: choose_yes(); break;
     case ABOUT_MENU: choose_ap(); break;
   }
@@ -253,6 +255,11 @@ void press_btnA()
                       case 3: exit_game(); break;
                     }
                     break;
+    case GAME_CLEAR:if(game_clear_point == 0)
+                      clear_cancel();
+                    else
+                      clear_save();
+                    break;
     case FILE_MENU: file_into(); break;
     case FILE_DELETE: if(file_delete_point == 0)
                         file_no_delete();
@@ -291,6 +298,7 @@ void press_btnB()
     case GAME_SAVE: 
     case GAME_HELP:
                     into_game(game_name); break;
+    case GAME_CLEAR:clear_cancel(); break;
     case FILE_MENU: file_back(); break;
     case FILE_DELETE:file_no_delete(); break;
     case ABOUT_HELP: 
@@ -317,6 +325,7 @@ void press_btnSELECT()
                      }
                      break;
     case MUSIC_PLAY:change_music_mode(); break;
+    case GAME_SAVE: show_clear(); break;
     case FILE_MENU: into_file_delete(); break;
   }
 }

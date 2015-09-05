@@ -37,6 +37,7 @@ extern int image_amount, image_offset;
 extern double image_sample;
 extern char game_name[32];
 extern int game_menu_point;
+extern int game_clear_point;
 extern volatile boolean game_playing;
 extern uint32_t game_start_time, game_end_time;
 extern int file_delete_point;
@@ -63,6 +64,7 @@ enum WHERE
   GAME_MENU,  //游戏文件列表
   GAME_START,  //游戏开始界面
   GAME_SAVE,  //游戏记录
+  GAME_CLEAR,  //清除游戏记录
   GAME_HELP,  //游戏介绍
   FILE_MENU,  //总文件列表
   FILE_DELETE,  //文件删除界面

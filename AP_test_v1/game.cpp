@@ -49,7 +49,7 @@ void change_game_menu_point(int change)
 void show_game_save()
 {
   char savename[32];
-  unsigned short play_count, win_count, lose_count;
+  unsigned short play_count, win_count, lose_count, run_count;
   uint32_t play_time;
   unsigned char temp[10];
   int i;
@@ -69,18 +69,27 @@ void show_game_save()
   win_count = *((unsigned short*)(&temp[2]));
   lose_count = *((unsigned short*)(&temp[4]));
   play_time = *((uint32_t*)(&temp[6]));
-  show_chinese_sentence(10, 38, "\xD3\xCE\xCF\xB7\xB4\xCE\xCA\xFD", 0, 0, 0, 1);  //游戏次数
+  show_chinese_sentence(10, 18, "\xD3\xCE\xCF\xB7\xB4\xCE\xCA\xFD", 0, 0, 0, 1);  //游戏次数
   sprintf(data_temp, ":%hu", play_count);
-  show_english(10 + 16 * 4, 38, data_temp, 0, 0, 0, 1);
-  show_chinese_sentence(10, 58, "\xCA\xA4\xB3\xA1", 0, 0, 0, 1);  //胜场
+  show_english(10 + 16 * 4, 18, data_temp, 0, 0, 0, 1);
+  show_chinese_sentence(10, 38, "\xCA\xA4\xB3\xA1", 0, 0, 0, 1);  //胜场
   sprintf(data_temp, ":%hu", win_count);
-  show_english(10 + 16 * 2, 58, data_temp, 0, 0, 0, 1);
-  show_chinese_sentence(10, 78, "\xB0\xDC\xB3\xA1", 0, 0, 0, 1);  //败场
+  show_english(10 + 16 * 2, 38, data_temp, 0, 0, 0, 1);
+  show_chinese_sentence(10, 58, "\xB0\xDC\xB3\xA1", 0, 0, 0, 1);  //败场
   sprintf(data_temp, ":%hu", lose_count);
+  show_english(10 + 16 * 2, 58, data_temp, 0, 0, 0, 1);
+  show_chinese_sentence(10, 78, "\xCC\xD3\xC5\xDC", 0, 0, 0, 1);  //逃跑
+  run_count = play_count - win_count - lose_count;
+  sprintf(data_temp, ":%hu", run_count);
   show_english(10 + 16 * 2, 78, data_temp, 0, 0, 0, 1);
   show_chinese_sentence(10, 98, "\xCA\xA4\xC2\xCA", 0, 0, 0, 1);  //胜率
-  rate = win_count * 100 / play_count;
-  sprintf(data_temp, ":%d%%", rate);
+  if(play_count != 0)
+  {
+    rate = win_count * 100 / play_count;
+    sprintf(data_temp, ":%d%%", rate);
+  }
+  else
+    sprintf(data_temp, ":?");
   show_english(10 + 16 * 2, 98, data_temp, 0, 0, 0, 1);
   show_chinese_sentence(10, 118, "\xCA\xB1\xBC\xE4", 0, 0, 0, 1);  //时间
   play_time /= 1000;
@@ -108,3 +117,121 @@ void show_game_help()
   entry.close();
   read_txt(helpname, 0, 0, 0, 0, 1);
 }
+void show_clear()
+{
+  work = GAME_CLEAR;
+  show_chinese_sentence(10, 138, "\xC7\xE5\xB3\xFD\xCA\xFD\xBE\xDD\xA3\xBF ", 0, 0, 0, 1);  //清除数据？
+  show_chinese_sentence(10 + 16 * 5 + 8, 138, "\xB7\xF1", 0, 0, 0, 1);  //否
+  show_chinese_sentence(10 + 16 * 7, 138, "\xCA\xC7", 0, 0, 0, 1);  //是
+  game_clear_point = 0;
+  myGLCD.setColor(255, 0, 0);
+  myGLCD.drawRect(96, 136, 115, 155);
+}
+void choose_no_clear()
+{
+  if(game_clear_point != 0)
+  {
+    myGLCD.setColor(255, 255, 255);
+    myGLCD.drawRect(120, 136, 139, 155);
+    game_clear_point = 0;
+    myGLCD.setColor(255, 0, 0);
+    myGLCD.drawRect(96, 136, 115, 155);
+  }
+}
+void choose_yes_clear()
+{
+  if(game_clear_point == 0)
+  {
+    myGLCD.setColor(255, 255, 255);
+    myGLCD.drawRect(96, 136, 115, 155);
+    game_clear_point = 1;
+    myGLCD.setColor(255, 0, 0);
+    myGLCD.drawRect(120, 136, 139, 155);
+  }
+}
+void clear_save()
+{
+  File entry;
+  char filename[32];
+  int amount, i;
+  uint8_t zero;
+  zero = 0;
+  sprintf(filename, "%s/save.aps", game_name);
+  entry = SD.open(filename, FILE_WRITE);
+  entry.seek(0);
+  for(i = 0; i < 10; i++)
+    entry.write(zero);
+  entry.close();
+  sprintf(filename, "%s/map", game_name);
+  amount = get_file_amount(filename, ONLY_FILE);
+  for(i = 1; i <= amount; i++)
+  {
+    sprintf(filename, "%s/map/%d.map", game_name, i);
+    entry = SD.open(filename, FILE_WRITE);
+    entry.seek(0);
+    entry.write(zero);
+    entry.close();
+  }
+  show_game_save();
+}
+void clear_cancel()
+{
+  work = GAME_SAVE;
+  myGLCD.setColor(255, 255, 255);
+  myGLCD.fillRect(10, 136, 139, 155);
+}
+void update_play(unsigned short all, unsigned short win, unsigned lose)
+{
+  char savename[32];
+  unsigned short play_count, win_count, lose_count;
+  unsigned char temp[6];
+  int i;
+  File entry;
+  sprintf(savename, "%s/%s", game_name, "save.aps");
+  entry = SD.open(savename, FILE_WRITE);
+  entry.seek(0);
+  for(i = 0; i < 6; i++)
+    temp[i] = entry.read();
+  play_count = *((unsigned short*)(&temp[0]));
+  win_count = *((unsigned short*)(&temp[2]));
+  lose_count = *((unsigned short*)(&temp[4]));
+  play_count += all;
+  win_count += win;
+  lose_count += lose;
+  entry.seek(0);
+  entry.write((uint8_t*)(&play_count), 2);
+  entry.write((uint8_t*)(&win_count), 2);
+  entry.write((uint8_t*)(&lose_count), 2);
+  entry.close();
+}
+void update_time(uint32_t playtime)
+{
+  char savename[32];
+  uint32_t play_time;
+  unsigned char temp[4];
+  int i;
+  File entry;
+  sprintf(savename, "%s/%s", game_name, "save.aps");
+  entry = SD.open(savename, FILE_WRITE);
+  entry.seek(6);
+  for(i = 0; i < 4; i++)
+    temp[i] = entry.read();
+  play_time = *((uint32_t*)temp);
+  play_time += playtime;
+  entry.seek(6);
+  entry.write((uint8_t*)(&play_time), 4);
+  entry.close();
+}
+void update_map(int index)
+{
+  char mapname[32];
+  uint8_t flag;
+  File entry;
+  sprintf(mapname, "%s/map/%d.map", game_name, index);
+  flag = 1;
+  entry = SD.open(mapname, FILE_WRITE);
+  entry.seek(0);
+  entry.write(flag);
+  entry.close();
+}
+

@@ -24,6 +24,7 @@ uint32_t game_num4;
 char* game_str1;
 char* game_str2;
 int game_str_cmp, game_str_len;
+unsigned short game_all, game_win, game_lose;
 unsigned char game_array;
 File game_apg, game_map;
 unsigned char var_unsigned_char[32];
@@ -51,6 +52,7 @@ void game_start()
     read_apg();
   game_end_time = millis();
   game_apg.close();
+  update_time(game_end_time - game_start_time);
   game_menu_point = 0;
   show_game_menu();
 }
@@ -110,8 +112,8 @@ void read_fun()
                           game_map_amount = get_file_amount(mapname, ONLY_FILE);
                         }
                         break;
-    case GET_MAP_FLAG: game_map_xy_flag = map_flag[game_map_x][game_map_y]; break;
-    case SET_MAP_FLAG: map_flag[game_map_x][game_map_y] = game_map_xy_flag; break;
+    case GET_MAP_FLAG: game_map_xy_flag = game_map_flag[game_map_x][game_map_y]; break;
+    case SET_MAP_FLAG: game_map_flag[game_map_x][game_map_y] = game_map_xy_flag; break;
     case NUM_PRINTF_HHU: sprintf(game_str1, "%hhu", game_num1); break;
     case NUM_PRINTF_HU: sprintf(game_str1, "%hu", game_num2); break;
     case NUM_PRINTF_D: sprintf(game_str1, "%d", game_num3); break;
@@ -120,6 +122,8 @@ void read_fun()
     case STR_CAT: strcat(game_str1, game_str2); break;
     case STR_CMP: game_str_cmp = strcmp(game_str1, game_str2); break;
     case STR_LEN: game_str_len = strlen(game_str1); break;
+    case UPDATE_SAVE: update_play(game_all, game_win, game_lose); break;
+    case UPDATE_MAP: update_map(game_map_index); break;
     case EXIT_GAME: game_playing = false; break;
   }
   game_ip += 2;

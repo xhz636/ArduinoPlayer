@@ -23,6 +23,7 @@ extern uint32_t game_num4;
 extern char* game_str1;
 extern char* game_str2;
 extern int game_str_cmp, game_str_len;
+extern unsigned short game_all, game_win, game_lose;
 extern unsigned char game_array;
 extern File game_apg, game_map;
 extern unsigned char var_unsigned_char[32];
@@ -100,7 +101,7 @@ enum FUN
     SHOW_CHINESE,
     OPEN_MAP,
     MAP_SEEK,
-    MAP_POSOTION,
+    MAP_POSITION,
     MAP_READ,
     MAP_SIZE,
     CLOSE_MAP,
@@ -115,6 +116,8 @@ enum FUN
     STR_CAT,
     STR_CMP,
     STR_LEN,
+    UPDATE_SAVE,
+    UPDATE_MAP,
     EXIT_GAME
 };
 enum VAR
@@ -154,6 +157,9 @@ enum VAR
     VAR_STR2,
     VAR_STR_CMP,
     VAR_STR_LEN,
+    VAR_ALL,
+    VAR_WIN,
+    VAR_LOSE,
     VAR_ARRAY,
     VAR_UNSIGNED_CHAR,
     VAR_BOOLEAN,
