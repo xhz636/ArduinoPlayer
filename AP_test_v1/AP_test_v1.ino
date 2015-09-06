@@ -56,7 +56,9 @@ const int btnSELECT = 9;
 const int battery = 10;
 void setup()
 {
-  //Serial.begin(9600);
+  #ifdef DEBUG
+  Serial.begin(9600);
+  #endif
   pinMode(battery, OUTPUT);
   digitalWrite(battery, HIGH);
   myGLCD.InitLCD();

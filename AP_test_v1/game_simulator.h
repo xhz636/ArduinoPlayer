@@ -1,40 +1,34 @@
 #ifndef GAME_SIMULATOR_H
 #define GAME_SIMULATOR_H
-extern unsigned char game_pin;
-extern boolean game_pressed;
-extern unsigned char game_color_r, game_color_g, game_color_b;
+extern int game_pin, game_pressed;
+extern int game_color_r, game_color_g, game_color_b;
 extern int game_point_x1, game_point_y1, game_point_x2, game_point_y2, game_point_radius;
 extern int game_time_delay;
-extern char game_ascii;
+extern unsigned char game_ascii;
 extern char* game_english;
 extern char* game_hz;
 extern char* game_chinese;
 extern int game_dot;
-extern int game_map_index;
-extern uint32_t game_map_offset, game_map_position, game_map_size;
+extern int game_map_index, game_map_offset, game_map_position, game_map_size, game_map_amount;
 extern unsigned char game_map_read;
-extern int game_map_amount;
-extern char game_map_flag[22][17];
-extern int game_map_x, game_map_y, game_map_xy_flag;
-extern unsigned char game_num1;
-extern unsigned short game_num2;
-extern int game_num3;
-extern uint32_t game_num4;
+extern unsigned char game_map_flag[22][17];
+extern int game_map_x, game_map_y;
+extern unsigned char game_map_xy_flag;
+extern int game_num;
 extern char* game_str1;
 extern char* game_str2;
 extern int game_str_cmp, game_str_len;
-extern unsigned short game_all, game_win, game_lose;
-extern unsigned char game_array;
+extern int game_all, game_win, game_lose;
+extern int game_index1, game_index2;
 extern File game_apg, game_map;
 extern unsigned char var_unsigned_char[32];
-extern boolean var_boolean[16];
-extern int var_int[32];
-extern uint32_t var_uint32_t[16];
-extern double var_double[16];
+extern int var_int[64];
 extern char var_string[4][64];
 extern unsigned char stack[1000];
 extern int game_sp;
 extern uint32_t game_ip;
+extern int game_cmp_result;
+extern void* game_var_pointer;
 void game_start();
 void read_apg();
 void read_cmd();
@@ -43,9 +37,14 @@ int read_int(uint32_t offset);
 uint32_t read_uint32_t(uint32_t offset);
 void ip_push();
 void ip_pop();
+void* get_var_pointer(unsigned char var_name, int var_index);
+void get_cmp_result(int num1, int num2);
 enum CMD
 {
     CMD_NONE = 0,
+    DTC,
+    CTD,
+    ATP,
     MOV_NUM,
     MOV_VAR,
     ADD_NUM,
@@ -68,11 +67,12 @@ enum CMD
     OR_VAR,
     XOR_NUM,
     XOR_VAR,
+    CMP_NUM,
+    CMP_VAR,
     NOT,
     SELF_INC,
     SELF_DEC,
     JMP,
-    CMP,
     JE,
     JNE,
     JG,
@@ -108,10 +108,8 @@ enum FUN
     GET_MAP_AMOUNT,
     GET_MAP_FLAG,
     SET_MAP_FLAG,
-    NUM_PRINTF_HHU,
-    NUM_PRINTF_HU,
-    NUM_PRINTF_D,
-    NUM_PRINTF_LU,
+    NUM_PRINTF,
+    SET_STRING,
     STR_CPY,
     STR_CAT,
     STR_CMP,
@@ -122,12 +120,12 @@ enum FUN
 };
 enum VAR
 {
-    VAR_NONE1 = 0,
+    VAR_NONE = 0,
     VAR_PIN,
     VAR_PRESSED,
     VAR_COLOR_R,
     VAR_COLOR_G,
-    VAR_COLOT_B,
+    VAR_COLOR_B,
     VAR_POINT_X1,
     VAR_POINT_Y1,
     VAR_POINT_X2,
@@ -137,7 +135,7 @@ enum VAR
     VAR_ASCII,
     VAR_ENGLISH,
     VAR_HZ,
-    VAR_CHINSES,
+    VAR_CHINESE,
     VAR_DOT,
     VAR_MAP_INDEX,
     VAR_MAP_OFFSET,
@@ -145,14 +143,10 @@ enum VAR
     VAR_MAP_READ,
     VAR_MAP_SIZE,
     VAR_MAP_AMOUNT,
-    VAR_MAP_FLAG,
     VAR_MAP_X,
     VAR_MAP_Y,
     VAR_MAP_XY_FLAG,
-    VAR_NUM1,
-    VAR_NUM2,
-    VAR_NUM3,
-    VAR_NUM4,
+    VAR_NUM,
     VAR_STR1,
     VAR_STR2,
     VAR_STR_CMP,
@@ -160,12 +154,19 @@ enum VAR
     VAR_ALL,
     VAR_WIN,
     VAR_LOSE,
-    VAR_ARRAY,
+    VAR_INDEX1,
+    VAR_INDEX2,
     VAR_UNSIGNED_CHAR,
-    VAR_BOOLEAN,
     VAR_INT,
-    VAR_UINT32_T,
-    VAR_DOUBLE,
     VAR_STRING
+};
+enum CMP
+{
+  EQUAL = 0x01,
+  NOT_EQUAL = 0x02,
+  GREATER = 0x04,
+  GREATER_EQUAL = 0x08,
+  LESS = 0x10,
+  LESS_EQUAL = 0x20
 };
 #endif
