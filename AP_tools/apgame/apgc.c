@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
     char* input = NULL;
     char* output = NULL;
     char apas_name[256];
+    char apg_name[256];
     save_temp_file = use_output_name = 0;
     for(i = 1; i < argc; i++)
     {
@@ -34,10 +35,15 @@ int main(int argc, char* argv[])
             }
             if(use_output_name && output == NULL)
                 if(i + 1 < argc)
+                {
                     output = argv[++i];
+                    strcpy(apg_name, output);
+                    strcat(apg_name, ".apg");
+                }
                 else
                 {
                     puts("-o参数后缺少输出文件名！");
+                    use_output_name = 0;
                     return 0;
                 }
         }
@@ -55,7 +61,7 @@ int main(int argc, char* argv[])
         for(i = strlen(apas_name) - 1; i >= 0; i--)
         if(apas_name[i] == '.')
         {
-            apas_name[i] == '\0';
+            apas_name[i] = '\0';
             break;
         }
         strcat(apas_name, ".apas");
@@ -64,6 +70,8 @@ int main(int argc, char* argv[])
             printf("编译完成！\n");
             if(!save_temp_file)
                 remove(apas_name);
+            if(use_output_name)
+                rename("game.apg", apg_name);
         }
         else
             printf("汇编错误！\n");

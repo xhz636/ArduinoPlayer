@@ -45,14 +45,14 @@ volatile boolean game_playing;
 uint32_t game_start_time, game_end_time;
 int file_delete_point;
 int about_menu_point, about_help_point;
-const int btnUP = 2;
-const int btnDOWN = 3;
-const int btnLEFT = 4;
-const int btnRIGHT = 5;
-const int btnA = 6;
-const int btnB = 7;
-const int btnSTART = 8;
-const int btnSELECT = 9;
+const int btnUP = 9;
+const int btnDOWN = 8;
+const int btnLEFT = 7;
+const int btnRIGHT = 6;
+const int btnA = 5;
+const int btnB = 4;
+const int btnSTART = 3;
+const int btnSELECT = 2;
 const int battery = 10;
 void setup()
 {

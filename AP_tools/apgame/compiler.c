@@ -27,7 +27,7 @@ int compiler(const char* apsc_name)
     for(i = strlen(apas_name) - 1; i >= 0; i--)
         if(apas_name[i] == '.')
         {
-            apas_name[i] == '\0';
+            apas_name[i] = '\0';
             break;
         }
     strcat(apas_name, ".apas");
@@ -43,9 +43,16 @@ int compiler(const char* apsc_name)
     {
         line_num++;
         line_msg = read_line(apsc_line);
-        if(line_msg.count == 0)
+        if(line_msg.count == 0 || line_msg.word[0][0] == '/' && line_msg.word[0][1] == '/' ||
+                line_msg.word[0][0] == ';' || line_msg.word[0][0] == '#')
             continue;
-        if(strcmp(line_msg.word[0], "code") == 0 && strcmp(line_msg.word[1], "segment") == 0)
+        if(line_msg.word[0][strlen(line_msg.word[0]) - 1] == ':' || strcmp(line_msg.word[0], "end") == 0 ||
+                strcmp(line_msg.word[1], "proc") == 0 || strcmp(line_msg.word[1], "endp") == 0)
+        {
+            fputs(apsc_line, apas);
+            continue;
+        }
+        else if(strcmp(line_msg.word[0], "code") == 0 && strcmp(line_msg.word[1], "segment") == 0)
         {
             in_code = 1;
             continue;
@@ -66,7 +73,7 @@ int compiler(const char* apsc_name)
             {
                 find_flag = find_in_fun(line_msg.word[0]);
                 if(find_flag != -1)
-                    compile_cmd(line_msg, all_var, find_flag, apas);
+                    compile_fun(line_msg, all_var, find_flag, apas);
                 else
                 {
                     printf("在%d行出现未知符号！\n", line_num);
@@ -303,7 +310,7 @@ void compile_cmd(LineRead line_msg, struct Variable* head, int cmd_flag, FILE* a
             strcpy(opt1, compile_var(line_msg.word[1], head, 1, apas));
         if(cmd_flag <= 14)
         {
-            if(is_const(line_msg.word[2]))
+            if(is_const(line_msg.word[2]) || find_in_var(line_msg.word[2]) != -1)
                 strcpy(opt2, line_msg.word[2]);
             else
                 strcpy(opt2, compile_var(line_msg.word[2], head, 2, apas));
@@ -349,13 +356,13 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "color_g") != 0)
             {
-                sprintf(mov_line, "mov color_g %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_g %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "color_b") != 0)
             {
-                sprintf(mov_line, "mov color_b %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_b %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -369,7 +376,7 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "point_y1") != 0)
             {
-                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -383,19 +390,19 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "point_y1") != 0)
             {
-                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "point_x2") != 0)
             {
-                sprintf(mov_line, "mov point_x2 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_x2 %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[4], "point_y2") != 0)
             {
-                sprintf(mov_line, "mov point_y2 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_y2 %s\n", line_msg.word[4]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -409,13 +416,13 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "point_y1") != 0)
             {
-                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "point_radius") != 0)
             {
-                sprintf(mov_line, "mov point_radius %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_radius %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -437,37 +444,37 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "point_y1") != 0)
             {
-                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "ascii") != 0)
             {
-                sprintf(mov_line, "dtc ascii %s\n", line_msg.word[1]);
+                sprintf(mov_line, "dtc ascii %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 0, apas);
             }
             if(strcmp(line_msg.word[4], "color_r") != 0)
             {
-                sprintf(mov_line, "mov color_r %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_r %s\n", line_msg.word[4]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[5], "color_g") != 0)
             {
-                sprintf(mov_line, "mov color_g %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_g %s\n", line_msg.word[5]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[6], "color_b") != 0)
             {
-                sprintf(mov_line, "mov color_b %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_b %s\n", line_msg.word[6]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[7], "dot") != 0)
             {
-                sprintf(mov_line, "mov dot %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov dot %s\n", line_msg.word[7]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -481,37 +488,37 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "point_y1") != 0)
             {
-                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "english") != 0)
             {
-                sprintf(mov_line, "atp english %s\n", line_msg.word[1]);
+                sprintf(mov_line, "atp english %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 2, apas);
             }
             if(strcmp(line_msg.word[4], "color_r") != 0)
             {
-                sprintf(mov_line, "mov color_r %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_r %s\n", line_msg.word[4]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[5], "color_g") != 0)
             {
-                sprintf(mov_line, "mov color_g %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_g %s\n", line_msg.word[5]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[6], "color_b") != 0)
             {
-                sprintf(mov_line, "mov color_b %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_b %s\n", line_msg.word[6]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[7], "dot") != 0)
             {
-                sprintf(mov_line, "mov dot %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov dot %s\n", line_msg.word[7]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -525,37 +532,37 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "point_y1") != 0)
             {
-                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "hz") != 0)
             {
-                sprintf(mov_line, "atp hz %s\n", line_msg.word[1]);
+                sprintf(mov_line, "atp hz %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 2, apas);
             }
             if(strcmp(line_msg.word[4], "color_r") != 0)
             {
-                sprintf(mov_line, "mov color_r %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_r %s\n", line_msg.word[4]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[5], "color_g") != 0)
             {
-                sprintf(mov_line, "mov color_g %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_g %s\n", line_msg.word[5]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[6], "color_b") != 0)
             {
-                sprintf(mov_line, "mov color_b %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_b %s\n", line_msg.word[6]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[7], "dot") != 0)
             {
-                sprintf(mov_line, "mov dot %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov dot %s\n", line_msg.word[7]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -569,37 +576,37 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "point_y1") != 0)
             {
-                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov point_y1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "chinese") != 0)
             {
-                sprintf(mov_line, "atp chinese %s\n", line_msg.word[1]);
+                sprintf(mov_line, "atp chinese %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 2, apas);
             }
             if(strcmp(line_msg.word[4], "color_r") != 0)
             {
-                sprintf(mov_line, "mov color_r %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_r %s\n", line_msg.word[4]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[5], "color_g") != 0)
             {
-                sprintf(mov_line, "mov color_g %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_g %s\n", line_msg.word[5]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[6], "color_b") != 0)
             {
-                sprintf(mov_line, "mov color_b %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov color_b %s\n", line_msg.word[6]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[7], "dot") != 0)
             {
-                sprintf(mov_line, "mov dot %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov dot %s\n", line_msg.word[7]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -631,7 +638,7 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "map_y") != 0)
             {
-                sprintf(mov_line, "mov map_y %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov map_y %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -645,13 +652,13 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "map_y") != 0)
             {
-                sprintf(mov_line, "mov map_y %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov map_y %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "map_xy_flag") != 0)
             {
-                sprintf(mov_line, "mov map_xy_flag %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov map_xy_flag %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -663,9 +670,9 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
-            if(strcmp(line_msg.word[1], "str1") != 0)
+            if(strcmp(line_msg.word[2], "str1") != 0)
             {
-                sprintf(mov_line, "atp str1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "atp str1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 2, apas);
             }
@@ -679,13 +686,13 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "index1") != 0)
             {
-                sprintf(mov_line, "mov index1 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov index1 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "ascii") != 0)
             {
-                sprintf(mov_line, "dtc ascii %s\n", line_msg.word[1]);
+                sprintf(mov_line, "dtc ascii %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 0, apas);
             }
@@ -699,7 +706,7 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "str2") != 0)
             {
-                sprintf(mov_line, "atp str2 %s\n", line_msg.word[1]);
+                sprintf(mov_line, "atp str2 %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 2, apas);
             }
@@ -721,13 +728,13 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
             }
             if(strcmp(line_msg.word[2], "win") != 0)
             {
-                sprintf(mov_line, "mov win %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov win %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
             if(strcmp(line_msg.word[3], "lose") != 0)
             {
-                sprintf(mov_line, "mov lose %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov lose %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -750,7 +757,7 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
         case 0:
             if(strcmp(line_msg.word[2], "pressed") != 0)
             {
-                sprintf(mov_line, "mov %s pressed\n", line_msg.word[1]);
+                sprintf(mov_line, "mov %s pressed\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -790,7 +797,7 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
         case 21:
             if(strcmp(line_msg.word[3], "map_xy_flag") != 0)
             {
-                sprintf(mov_line, "mov %s map_xy_flag\n", line_msg.word[1]);
+                sprintf(mov_line, "mov %s map_xy_flag\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -798,7 +805,7 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
         case 27:
             if(strcmp(line_msg.word[3], "str_cmp") != 0)
             {
-                sprintf(mov_line, "mov str_cmp %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov str_cmp %s\n", line_msg.word[3]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -806,7 +813,7 @@ void compile_fun(LineRead line_msg, struct Variable* head, int fun_flag, FILE* a
         case 28:
             if(strcmp(line_msg.word[2], "str_len") != 0)
             {
-                sprintf(mov_line, "mov str_len %s\n", line_msg.word[1]);
+                sprintf(mov_line, "mov str_len %s\n", line_msg.word[2]);
                 mov_var = read_line(mov_line);
                 compile_cmd(mov_var, head, 3, apas);
             }
@@ -876,13 +883,13 @@ void write_string(LineRead line_msg, struct Variable* head, FILE* apas)
     sprintf(line, "    mov index1 %d\n", var -> index);
     fputs(line, apas);
     fputs("    atp str1 string\n", apas);
-    for(i = 0; i <= strlen(line); i++)
+    for(i = 0; i <= strlen(string); i++)
     {
         if(i == 0)
             fputs("    mov index1 0\n", apas);
         else
             fputs("    inc index1\n", apas);
-        sprintf(line, "    mov num %d\n", line[i]);
+        sprintf(line, "    mov num %d\n", string[i]);
         fputs(line, apas);
         fputs("    dtc ascii num\n", apas);
         fputs("    setString\n", apas);
