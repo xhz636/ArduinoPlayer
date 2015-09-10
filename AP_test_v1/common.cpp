@@ -125,7 +125,7 @@ void show_english(int x, int y, char* sentence, int r, int g, int b, int dot)
 {
   int i;
   for(i = 0; i < strlen(sentence); i++)
-    show_ascii(x + 8 * i, y, sentence[i], r, g, b, dot);
+    show_ascii(x + 8 * dot * i, y, sentence[i], r, g, b, dot);
   return;
 }
 void show_chinese(int x, int y, char* s, int r, int g, int b, int dot)

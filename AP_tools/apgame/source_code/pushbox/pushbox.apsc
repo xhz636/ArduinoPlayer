@@ -1,0 +1,1008 @@
+#编译器暂不支持宏定义,请使用编辑器自行替换
+#define MENU 0
+#define GAME 1
+#define WIN 2
+#define btnUP 9
+#define btnDOWN 8
+#define btnLEFT 7
+#define btnRIGHT 6
+#define btnA 5
+#define btnB 4
+#define btnSTART 3
+#define btnSELECT 2
+
+data segment
+    int vari_work
+    int vari_exit_flag
+    int vari_temp
+    int vari_map_x_max
+    int vari_map_y_max
+    int vari_map_block_x1
+    int vari_map_block_y1
+    int vari_map_block_x2
+    int vari_map_block_y2
+    int vari_map_block_radius
+    int vari_map_left
+    int vari_map_top
+    int vari_people_x
+    int vari_people_y
+    int vari_redraw_begin_x
+    int vari_redraw_begin_y
+    int vari_push_box
+    string vars_msg
+    string vars_temp
+data ends
+
+code segment
+
+main proc
+    call init
+playing:
+    call button
+    cmp vari_exit_flag 1
+    jne playing
+    exitGame
+    ret
+main endp
+
+init proc
+    mov map_index 1
+    mov vari_work MENU
+    mov vari_exit_flag 0
+    getMapAmount map_amount
+    mov vars_msg "请选择地图："
+    showChinese 62 64 vars_msg 0 0 0 1
+    call draw_map_index
+    ret
+init endp
+
+button proc
+    btnPress btnUP pressed
+    cmp pressed 1
+    jne NOT_UP
+    call button_up
+    jmp BUTTON_END
+NOT_UP:
+    btnPress btnDOWN pressed
+    cmp pressed 1
+    jne NOT_DOWN
+    call button_down
+    jmp BUTTON_END
+NOT_DOWN:
+    btnPress btnLEFT pressed
+    cmp pressed 1
+    jne NOT_LEFT
+    call button_left
+    jmp BUTTON_END
+NOT_LEFT:
+    btnPress btnRIGHT pressed
+    cmp pressed 1
+    jne NOT_RIGHT
+    call button_right
+    jmp BUTTON_END
+NOT_RIGHT:
+    btnPress btnA pressed
+    cmp pressed 1
+    jne NOT_A
+    call button_a
+    jmp BUTTON_END
+NOT_A:
+    btnPress btnB pressed
+    cmp pressed 1
+    jne NOT_B
+    call button_b
+    jmp BUTTON_END
+NOT_B:
+    btnPress btnSTART pressed
+    cmp pressed 1
+    jne NOT_START
+    call button_start
+    jmp BUTTON_END
+NOT_START:
+    btnPress btnSELECT pressed
+    cmp pressed 1
+    jne BUTTON_END
+    call button_select
+BUTTON_END:
+    ret
+button endp
+
+button_up proc
+    cmp vari_work MENU
+    jne UP_NOT_MENU
+    jmp BUTTON_UP_END
+UP_NOT_MENU:
+    cmp vari_work GAME
+    jne BUTTON_UP_END
+    call move_up
+BUTTON_UP_END:
+    ret
+untton_up endp
+
+button_down proc
+    cmp vari_work MENU
+    jne DOWN_NOT_MENU
+    jmp BUTTON_DOWN_END
+DOWN_NOT_MENU:
+    cmp vari_work GAME
+    jne BUTTON_DOWN_END
+    call move_down
+BUTTON_DOWN_END:
+    ret
+untton_down endp
+
+button_left proc
+    cmp vari_work MENU
+    jne LEFT_NOT_MENU
+    call map_index_sub    
+    jmp BUTTON_LEFT_END
+LEFT_NOT_MENU:
+    cmp vari_work GAME
+    jne BUTTON_LEFT_END
+    call move_left
+BUTTON_LEFT_END:
+    ret
+untton_left endp
+
+button_right proc
+    cmp vari_work MENU
+    jne RIGHT_NOT_MENU
+    call map_index_add
+    jmp BUTTON_RIGHT_END
+RIGHT_NOT_MENU:
+    cmp vari_work GAME
+    jne BUTTON_RIGHT_END
+    call move_right
+BUTTON_RIGHT_END:
+    ret
+untton_right endp
+
+button_a proc
+    cmp vari_work MENU
+    jne A_NOT_MENU
+    call read_map_flag
+    jmp BUTTON_A_END
+A_NOT_MENU:
+    cmp vari_work GAME
+    jne BUTTON_A_END
+BUTTON_A_END:
+    ret
+untton_a endp
+
+button_b proc
+    cmp vari_work MENU
+    jne B_NOT_MENU
+    mov vari_exit_flag 1
+    jmp BUTTON_B_END
+B_NOT_MENU:
+    cmp vari_work GAME
+    jne B_NOT_GAME
+    updateSave 0 0 1
+    call exit_to_game_menu
+    jmp BUTTON_B_END
+B_NOT_GAME:
+    cmp vari_work WIN
+    jne BUTTON_B_END
+    call exit_to_game_menu
+BUTTON_B_END:
+    ret
+untton_b endp
+
+button_start proc
+    cmp vari_work MENU
+    jne START_NOT_MENU
+    call read_map_flag
+    jmp BUTTON_START_END
+START_NOT_MENU:
+    cmp vari_work GAME
+    jne START_NOT_GAME
+    updateSave 0 0 1
+    call read_map_flag
+    jmp BUTTON_START_END
+START_NOT_GAME:
+    cmp vari_work WIN
+    jne BUTTON_START_END
+    call read_map_flag
+BUTTON_START_END:
+    ret
+untton_start endp
+
+button_select proc
+    cmp vari_work MENU
+    jne SELECT_NOT_MENU
+    jmp BUTTON_SELECT_END
+SELECT_NOT_MENU:
+    cmp vari_work GAME
+    jne SELECT_NOT_GAME
+    updateSave 0 0 1
+    add map_index 1
+    cmp map_index map_amount
+    jle SELECT_SKIP_TO_NEXT
+    mov map_index map_amount
+SELECT_SKIP_TO_NEXT:
+    call read_map_flag
+    jmp BUTTON_SELECT_END
+SELECT_NOT_GAME:
+    cmp vari_work WIN
+    jne BUTTON_SELECT_END
+    add map_index 1
+    cmp map_index map_amount
+    jle SELECT_GO_TO_NEXT
+    mov map_index map_amount
+SELECT_GO_TO_NEXT:
+    call read_map_flag
+BUTTON_SELECT_END:
+    ret
+untton_select endp
+
+map_index_add proc
+    cmp map_index map_amount
+    je MAP_INDEX_ADD_END
+    inc map_index
+    btnPress btnSELECT pressed
+    cmp pressed 1
+    jne MAP_INDEX_ADD_ONE
+    add map_index 9
+MAP_INDEX_ADD_ONE:
+    cmp map_index map_amount
+    jle MAP_INDEX_ADD_DONE
+    mov map_index map_amount
+MAP_INDEX_ADD_DONE:
+    call draw_map_index
+MAP_INDEX_ADD_END:
+    ret
+map_index_add endp
+
+map_index_sub proc
+    cmp map_index 1
+    je MAP_INDEX_SUB_END
+    dec map_index
+    btnPress btnSELECT pressed
+    cmp pressed 1
+    jne MAP_INDEX_SUB_ONE
+    sub map_index 9
+MAP_INDEX_SUB_ONE:
+    cmp map_index 1
+    jge MAP_INDEX_SUB_DONE
+    mov map_index 1
+MAP_INDEX_SUB_DONE:
+    call draw_map_index
+MAP_INDEX_SUB_END:
+    ret
+map_index_sub endp
+
+draw_map_index proc
+    setColor 255 255 255
+    fillRect 90 80 129 111
+    numPrintf map_index vars_temp
+    showEnglish 102 80 vars_temp 0 0 0 1
+    openMap map_index
+    mapSeek 0
+    mapRead map_read
+    closeMap
+    ctd vari_temp map_read
+    cmp vari_temp 0
+    je DRAW_MAP_INDEX_END
+    mov vars_temp "clear"
+    showEnglish 90 96 vars_temp 0 0 0 1
+DRAW_MAP_INDEX_END:
+    ret
+draw_map_index endp
+
+read_map_flag proc
+    fillScr 0 0 0
+    openMap map_index
+    mapSeek 1
+    mapRead map_read
+    ctd vari_map_x_max map_read
+    mapRead map_read
+    ctd vari_map_y_max map_read
+    mov map_y 0
+READ_MAP_FLAG_LOOP_Y:
+    mov map_x 0
+READ_MAP_FLAG_LOOP_X:
+    mapRead map_read
+    ctd vari_temp map_read
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    inc map_x
+    cmp map_x vari_map_x_max
+    jl READ_MAP_FLAG_LOOP_X
+    inc map_y
+    cmp map_y vari_map_y_max
+    jl READ_MAP_FLAG_LOOP_Y
+    closeMap
+    mov vari_temp 22
+    sub vari_temp vari_map_x_max
+    div vari_temp 2
+    mov vari_map_left vari_temp
+    mov vari_temp 17
+    sub vari_temp vari_map_y_max
+    div vari_temp 2
+    mov vari_map_top vari_temp
+    call draw_map_flag
+    updateSave 1 0 0
+    mov vari_work GAME
+    ret
+read_map_flag endp
+
+draw_map_flag proc
+    mov map_y 0
+DRAW_MAP_FLAG_LOOP_Y:
+    mov map_x 0
+DRAW_MAP_FLAG_LOOP_X:
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp '.'
+    je DRAW_MAP_FLAG_GOTO_LOOP
+    cmp vari_temp '#'
+    jne DRAW_MAP_FLAG_NOT_WALL
+    call draw_map_wall
+    jmp DRAW_MAP_FLAG_GOTO_LOOP
+DRAW_MAP_FLAG_NOT_WALL:
+    cmp vari_temp ' '
+    jne DRAW_MAP_FLAG_NOT_ROAD
+    call draw_map_road
+    jmp DRAW_MAP_FLAG_GOTO_LOOP
+DRAW_MAP_FLAG_NOT_ROAD:
+    cmp vari_temp 'X'
+    jne DRAW_MAP_FLAG_NOT_OUTSIDE_BOX
+    call draw_map_outside_box
+    jmp DRAW_MAP_FLAG_GOTO_LOOP
+DRAW_MAP_FLAG_NOT_OUTSIDE_BOX:
+    cmp vari_temp '@'
+    jne DRAW_MAP_FLAG_NOT_INSIDE_BOX
+    call draw_map_inside_box
+    jmp DRAW_MAP_FLAG_GOTO_LOOP
+DRAW_MAP_FLAG_NOT_INSIDE_BOX:
+    cmp vari_temp 'o'
+    jne DRAW_MAP_FLAG_NOT_TARGET
+    call draw_map_target
+    jmp DRAW_MAP_FLAG_GOTO_LOOP
+DRAW_MAP_FLAG_NOT_TARGET:
+    cmp vari_temp '8'
+    jne DRAW_MAP_FLAG_GOTO_LOOP
+    call draw_map_people
+DRAW_MAP_FLAG_GOTO_LOOP:
+    inc map_x
+    cmp map_x vari_map_x_max
+    jl DRAW_MAP_FLAG_LOOP_X
+    inc map_y
+    cmp map_y vari_map_y_max
+    jl DRAW_MAP_FLAG_LOOP_Y
+    ret
+draw_map_flag endp
+
+get_map_block_rect proc
+    mov vari_map_block_x1 map_x
+    add vari_map_block_x1 vari_map_left
+    mul vari_map_block_x1 10
+    mov vari_map_block_y1 map_y
+    add vari_map_block_y1 vari_map_top
+    mul vari_map_block_y1 10
+    mov vari_map_block_x2 vari_map_block_x1
+    add vari_map_block_x2 9
+    mov vari_map_block_y2 vari_map_block_y1
+    add vari_map_block_y2 9
+    ret
+get_map_block_rect endp
+
+get_map_block_circle proc
+    mov vari_map_block_x1 map_x
+    add vari_map_block_x1 vari_map_left
+    mul vari_map_block_x1 10
+    add vari_map_block_x1 5 
+    mov vari_map_block_y1 map_y
+    add vari_map_block_y1 vari_map_top
+    mul vari_map_block_y1 10
+    add vari_map_block_y1 5
+    mov vari_map_block_radius 4
+    ret
+get_map_block_circle endp
+
+draw_map_wall proc
+    call get_map_block_rect
+    setColor 0 0 255
+    fillRect vari_map_block_x1 vari_map_block_y1 vari_map_block_x2 vari_map_block_y2
+    ret
+draw_map_wall endp
+
+draw_map_road proc
+    call get_map_block_rect
+    setColor 233 233 233
+    fillRect vari_map_block_x1 vari_map_block_y1 vari_map_block_x2 vari_map_block_y2
+    ret
+draw_map_road endp
+
+draw_map_outside_box proc
+    call draw_map_road
+    setColor 255 255 0
+    drawRect vari_map_block_x1 vari_map_block_y1 vari_map_block_x2 vari_map_block_y2
+    drawLine vari_map_block_x1 vari_map_block_y1 vari_map_block_x2 vari_map_block_y2
+    drawLine vari_map_block_x2 vari_map_block_y1 vari_map_block_x1 vari_map_block_y2
+    ret
+draw_map_outside_box endp
+
+draw_map_inside_box proc
+    call draw_map_road
+    setColor 255 0 0
+    drawRect vari_map_block_x1 vari_map_block_y1 vari_map_block_x2 vari_map_block_y2
+    drawLine vari_map_block_x1 vari_map_block_y1 vari_map_block_x2 vari_map_block_y2
+    drawLine vari_map_block_x2 vari_map_block_y1 vari_map_block_x1 vari_map_block_y2
+    ret
+draw_map_inside_box endp
+
+draw_map_target proc
+    call draw_map_road
+    call get_map_block_circle
+    setColor 255 0 0
+    drawCircle vari_map_block_x1 vari_map_block_y1 vari_map_block_radius
+    ret
+draw_map_target endp
+
+draw_map_people proc
+    call draw_map_road
+    call get_map_block_circle
+    setColor 255 255 0
+    fillCircle vari_map_block_x1 vari_map_block_y1 vari_map_block_radius
+    mov vari_people_x map_x
+    mov vari_people_y map_y
+    ret
+draw_map_people endp
+
+exit_to_game_menu proc
+    fillScr 255 255 255
+    mov vari_work MENU
+    mov vars_msg "请选择地图："
+    showChinese 62 64 vars_msg 0 0 0 1
+    call draw_map_index
+    ret
+exit_to_game_menu endp
+
+move_up proc
+    mov vari_push_box 0
+    mov vari_redraw_begin_x vari_people_x
+    mov vari_redraw_begin_y vari_people_y
+    mov map_x vari_people_x
+    mov map_y vari_people_y
+    sub map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_UP_NOT_ROAD
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    jmp MOVE_UP_DRAW_LAST
+MOVE_UP_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_UP_NOT_TARGET
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    jmp MOVE_UP_DRAW_LAST
+MOVE_UP_NOT_TARGET:
+    cmp vari_temp 'X'
+    jne MOVE_UP_NOT_OUTSIDE_BOX
+    sub map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_UP_OUTSIDE_BOX_NEXT_NOT_ROAD
+    mov vari_temp 'X'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    add map_y 1
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_UP_DRAW_LAST
+MOVE_UP_OUTSIDE_BOX_NEXT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_UP_END
+    mov vari_temp '@'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    add map_y 1
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_UP_DRAW_LAST
+MOVE_UP_NOT_OUTSIDE_BOX:
+    cmp vari_temp '@'
+    jne MOVE_UP_END
+    sub map_y 1    
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_UP_INSIDE_BOX_NEXT_NOT_ROAD
+    mov vari_temp 'X'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    add map_y 1
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_UP_DRAW_LAST
+MOVE_UP_INSIDE_BOX_NEXT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_UP_END
+    mov vari_temp '@'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    add map_y 1
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_UP_DRAW_LAST
+MOVE_UP_DRAW_LAST:
+    add map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp '0'
+    jne MOVE_UP_LAST_IS_ROAD
+    mov vari_temp 'o'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    call redraw_up
+    jmp MOVE_UP_END
+MOVE_UP_LAST_IS_ROAD:
+    mov vari_temp ' '
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    call redraw_up
+MOVE_UP_END:
+    ret
+move_up endp
+
+move_down proc
+    mov vari_push_box 0
+    mov vari_redraw_begin_x vari_people_x
+    mov vari_redraw_begin_y vari_people_y
+    mov map_x vari_people_x
+    mov map_y vari_people_y
+    add map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_DOWN_NOT_ROAD
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    jmp MOVE_DOWN_DRAW_LAST
+MOVE_DOWN_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_DOWN_NOT_TARGET
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    jmp MOVE_DOWN_DRAW_LAST
+MOVE_DOWN_NOT_TARGET:
+    cmp vari_temp 'X'
+    jne MOVE_DOWN_NOT_OUTSIDE_BOX
+    add map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_DOWN_OUTSIDE_BOX_NEXT_NOT_ROAD
+    mov vari_temp 'X'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    sub map_y 1
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_DOWN_DRAW_LAST
+MOVE_DOWN_OUTSIDE_BOX_NEXT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_DOWN_END
+    mov vari_temp '@'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    sub map_y 1
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_DOWN_DRAW_LAST
+MOVE_DOWN_NOT_OUTSIDE_BOX:
+    cmp vari_temp '@'
+    jne MOVE_DOWN_END
+    add map_y 1    
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_DOWN_INSIDE_BOX_NEXT_NOT_ROAD
+    mov vari_temp 'X'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    sub map_y 1
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_DOWN_DRAW_LAST
+MOVE_DOWN_INSIDE_BOX_NEXT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_DOWN_END
+    mov vari_temp '@'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    sub map_y 1
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_DOWN_DRAW_LAST
+MOVE_DOWN_DRAW_LAST:
+    sub map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp '0'
+    jne MOVE_DOWN_LAST_IS_ROAD
+    mov vari_temp 'o'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    call redraw_down
+    jmp MOVE_DOWN_END
+MOVE_DOWN_LAST_IS_ROAD:
+    mov vari_temp ' '
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    call redraw_down
+MOVE_DOWN_END:
+    ret
+move_down endp
+
+move_left proc
+    mov vari_push_box 0
+    mov vari_redraw_begin_x vari_people_x
+    mov vari_redraw_begin_y vari_people_y
+    mov map_x vari_people_x
+    mov map_y vari_people_y
+    sub map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_LEFT_NOT_ROAD
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    jmp MOVE_LEFT_DRAW_LAST
+MOVE_LEFT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_LEFT_NOT_TARGET
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    jmp MOVE_LEFT_DRAW_LAST
+MOVE_LEFT_NOT_TARGET:
+    cmp vari_temp 'X'
+    jne MOVE_LEFT_NOT_OUTSIDE_BOX
+    sub map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_LEFT_OUTSIDE_BOX_NEXT_NOT_ROAD
+    mov vari_temp 'X'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    add map_x 1
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_LEFT_DRAW_LAST
+MOVE_LEFT_OUTSIDE_BOX_NEXT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_LEFT_END
+    mov vari_temp '@'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    add map_x 1
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_LEFT_DRAW_LAST
+MOVE_LEFT_NOT_OUTSIDE_BOX:
+    cmp vari_temp '@'
+    jne MOVE_LEFT_END
+    sub map_x 1    
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_LEFT_INSIDE_BOX_NEXT_NOT_ROAD
+    mov vari_temp 'X'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    add map_x 1
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_LEFT_DRAW_LAST
+MOVE_LEFT_INSIDE_BOX_NEXT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_LEFT_END
+    mov vari_temp '@'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    add map_x 1
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_LEFT_DRAW_LAST
+MOVE_LEFT_DRAW_LAST:
+    add map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp '0'
+    jne MOVE_LEFT_LAST_IS_ROAD
+    mov vari_temp 'o'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    call redraw_left
+    jmp MOVE_LEFT_END
+MOVE_LEFT_LAST_IS_ROAD:
+    mov vari_temp ' '
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    call redraw_left
+MOVE_LEFT_END:
+    ret
+move_left endp
+
+move_right proc
+    mov vari_push_box 0
+    mov vari_redraw_begin_x vari_people_x
+    mov vari_redraw_begin_y vari_people_y
+    mov map_x vari_people_x
+    mov map_y vari_people_y
+    add map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_RIGHT_NOT_ROAD
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    jmp MOVE_RIGHT_DRAW_LAST
+MOVE_RIGHT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_RIGHT_NOT_TARGET
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    jmp MOVE_RIGHT_DRAW_LAST
+MOVE_RIGHT_NOT_TARGET:
+    cmp vari_temp 'X'
+    jne MOVE_RIGHT_NOT_OUTSIDE_BOX
+    add map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_RIGHT_OUTSIDE_BOX_NEXT_NOT_ROAD
+    mov vari_temp 'X'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    sub map_x 1
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_RIGHT_DRAW_LAST
+MOVE_RIGHT_OUTSIDE_BOX_NEXT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_RIGHT_END
+    mov vari_temp '@'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    sub map_x 1
+    mov vari_temp '8'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_RIGHT_DRAW_LAST
+MOVE_RIGHT_NOT_OUTSIDE_BOX:
+    cmp vari_temp '@'
+    jne MOVE_RIGHT_END
+    add map_x 1    
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp ' '
+    jne MOVE_RIGHT_INSIDE_BOX_NEXT_NOT_ROAD
+    mov vari_temp 'X'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    sub map_x 1
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_RIGHT_DRAW_LAST
+MOVE_RIGHT_INSIDE_BOX_NEXT_NOT_ROAD:
+    cmp vari_temp 'o'
+    jne MOVE_RIGHT_END
+    mov vari_temp '@'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    sub map_x 1
+    mov vari_temp '0'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    mov vari_push_box 1
+    jmp MOVE_RIGHT_DRAW_LAST
+MOVE_RIGHT_DRAW_LAST:
+    sub map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp '0'
+    jne MOVE_RIGHT_LAST_IS_ROAD
+    mov vari_temp 'o'
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    call redraw_right
+    jmp MOVE_RIGHT_END
+MOVE_RIGHT_LAST_IS_ROAD:
+    mov vari_temp ' '
+    dtc map_xy_flag vari_temp
+    setMapFlag map_x map_y map_xy_flag
+    call redraw_right
+MOVE_RIGHT_END:
+    ret
+move_right endp
+
+check_game proc
+    mov map_y 0
+CHECK_GAME_LOOP_Y:
+    mov map_x 0
+CHECK_GAME_LOOP_X:
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    cmp vari_temp 'X'
+    je CHECK_GAME_NOT_WIN
+    inc map_x
+    cmp map_x vari_map_x_max
+    jl CHECK_GAME_LOOP_X
+    inc map_y
+    cmp map_y vari_map_y_max
+    jl CHECK_GAME_LOOP_Y
+    jmp CHECK_GAME_WIN
+CHECK_GAME_NOT_WIN:
+    ret
+CHECK_GAME_WIN:
+    mov vars_temp "win"
+    showEnglish 50 48 vars_temp 255 0 0 5
+    updateMap map_index
+    updateSave 0 1 0
+    mov vari_work WIN
+    ret
+check_game endp
+
+redraw_up proc
+    mov map_x vari_redraw_begin_x
+    mov map_y vari_redraw_begin_y
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+    sub map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+    cmp vari_push_box 1
+    jne REDRAW_UP_END
+    sub map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+REDRAW_UP_END:
+    call check_game
+    ret
+redraw_up endp
+
+redraw_down proc
+    mov map_x vari_redraw_begin_x
+    mov map_y vari_redraw_begin_y
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+    add map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+    cmp vari_push_box 1
+    jne REDRAW_DOWN_END
+    add map_y 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+REDRAW_DOWN_END:
+    call check_game
+    ret
+redraw_down endp
+
+redraw_left proc
+    mov map_x vari_redraw_begin_x
+    mov map_y vari_redraw_begin_y
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+    sub map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+    cmp vari_push_box 1
+    jne REDRAW_LEFT_END
+    sub map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+REDRAW_LEFT_END:
+    call check_game
+    ret
+redraw_left endp
+
+redraw_right proc
+    mov map_x vari_redraw_begin_x
+    mov map_y vari_redraw_begin_y
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+    add map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+    cmp vari_push_box 1
+    jne REDRAW_RIGHT_END
+    add map_x 1
+    getMapFlag map_x map_y map_xy_flag
+    ctd vari_temp map_xy_flag
+    call draw_flag_in_temp
+REDRAW_RIGHT_END:
+    call check_game
+    ret
+redraw_right endp
+
+draw_flag_in_temp proc
+    cmp vari_temp ' '
+    jne DRAW_FLAG_IN_TEMP_NOT_ROAD
+    call draw_map_road
+    jmp DRAW_FLAG_IN_TEMP_END
+DRAW_FLAG_IN_TEMP_NOT_ROAD:
+    cmp vari_temp 'X'
+    jne DRAW_FLAG_IN_TEMP_NOT_OUTSIDE_BOX
+    call draw_map_outside_box
+    jmp DRAW_FLAG_IN_TEMP_END
+DRAW_FLAG_IN_TEMP_NOT_OUTSIDE_BOX:
+    cmp vari_temp '@'
+    jne DRAW_FLAG_IN_TEMP_NOT_INSIDE_BOX
+    call draw_map_inside_box
+    jmp DRAW_FLAG_IN_TEMP_END
+DRAW_FLAG_IN_TEMP_NOT_INSIDE_BOX:
+    cmp vari_temp 'o'
+    jne DRAW_FLAG_IN_TEMP_NOT_TARGET
+    call draw_map_target
+    jmp DRAW_FLAG_IN_TEMP_END
+DRAW_FLAG_IN_TEMP_NOT_TARGET:
+    cmp vari_temp '8'
+    jne DRAW_FLAG_IN_TEMP_NOT_PEOPLE
+    call draw_map_people
+    jmp DRAW_FLAG_IN_TEMP_END
+DRAW_FLAG_IN_TEMP_NOT_PEOPLE:
+    cmp vari_temp '0'
+    jne DRAW_FLAG_IN_TEMP_END
+    call draw_map_people
+DRAW_FLAG_IN_TEMP_END:
+    ret
+draw_flag_in_temp endp
+
+code ends
+
+end main

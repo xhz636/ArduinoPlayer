@@ -880,7 +880,7 @@ void write_string(LineRead line_msg, struct Variable* head, FILE* apas)
     strcpy(string, line_msg.word[2] + 1);
     string[strlen(string) - 1] = '\0';
     var = find_in_variable(line_msg.word[1], head);
-    sprintf(line, "    mov index1 %d\n", var -> index);
+    sprintf(line, "    mov index2 %d\n", var -> index);
     fputs(line, apas);
     fputs("    atp str1 string\n", apas);
     for(i = 0; i <= strlen(string); i++)
