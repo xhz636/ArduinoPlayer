@@ -873,7 +873,7 @@ char* compile_var(const char* word, struct Variable* head, int which, FILE* apas
 }
 void write_string(LineRead line_msg, struct Variable* head, FILE* apas)
 {
-    char string[256];
+    unsigned char string[256];
     int i;
     char line[256];
     struct Variable* var;
@@ -889,7 +889,7 @@ void write_string(LineRead line_msg, struct Variable* head, FILE* apas)
             fputs("    mov index1 0\n", apas);
         else
             fputs("    inc index1\n", apas);
-        sprintf(line, "    mov num %d\n", string[i]);
+        sprintf(line, "    mov num %hhu\n", string[i]);
         fputs(line, apas);
         fputs("    dtc ascii num\n", apas);
         fputs("    setString\n", apas);

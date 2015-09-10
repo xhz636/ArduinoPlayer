@@ -165,8 +165,6 @@ enum CMP
   EQUAL = 0x01,
   NOT_EQUAL = 0x02,
   GREATER = 0x04,
-  GREATER_EQUAL = 0x08,
-  LESS = 0x10,
-  LESS_EQUAL = 0x20
+  LESS = 0x08
 };
 #endif

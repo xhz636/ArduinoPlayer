@@ -145,13 +145,13 @@ void read_cmd()
     case JG: if(game_cmp_result & GREATER)
                game_ip = sign;
              break;
-    case JGE: if(game_cmp_result & GREATER_EQUAL)
+    case JGE: if((game_cmp_result & EQUAL) || (game_cmp_result & GREATER))
                 game_ip = sign;
               break;
     case JL: if(game_cmp_result & LESS)
                game_ip = sign;
              break;
-    case JLE: if(game_cmp_result & LESS_EQUAL)
+    case JLE: if((game_cmp_result & EQUAL) || (game_cmp_result & LESS))
                 game_ip = sign;
               break;
     case CALL: ip_push();
@@ -312,11 +312,7 @@ void get_cmp_result(int num1, int num2)
 {
   game_cmp_result = 0;
   if(num1 == num2)
-  {
     game_cmp_result |= EQUAL;
-    game_cmp_result |= GREATER_EQUAL;
-    game_cmp_result |= LESS_EQUAL;
-  }
   else
   {
     game_cmp_result |= NOT_EQUAL;
